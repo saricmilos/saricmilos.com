@@ -1,6 +1,11 @@
 "use client";
 
-import { Github, Linkedin, Sparkles, Youtube } from "lucide-react";
+import {
+  BriefcaseBusiness,
+  GitBranch,
+  Sparkles,
+  TvMinimalPlay,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 
 const socialLinks = [
@@ -8,7 +13,7 @@ const socialLinks = [
     id: "linkedin",
     href: "https://www.linkedin.com/in/milos-saric-753772237/",
     label: "LinkedIn",
-    icon: Linkedin,
+    icon: BriefcaseBusiness,
     colorClass: "from-blue-600 to-sky-500",
     hoverColor: "group-hover:text-blue-500",
     glowColor: "group-hover:shadow-blue-500/40",
@@ -17,7 +22,7 @@ const socialLinks = [
     id: "github",
     href: "https://github.com/saricmilos",
     label: "GitHub",
-    icon: Github,
+    icon: GitBranch,
     colorClass: "from-violet-600 to-fuchsia-500",
     hoverColor: "group-hover:text-violet-500",
     glowColor: "group-hover:shadow-violet-500/40",
@@ -26,7 +31,7 @@ const socialLinks = [
     id: "youtube",
     href: "https://www.youtube.com/@saricmilos",
     label: "YouTube",
-    icon: Youtube,
+    icon: TvMinimalPlay,
     colorClass: "from-rose-600 to-red-500",
     hoverColor: "group-hover:text-red-500",
     glowColor: "group-hover:shadow-red-500/40",
