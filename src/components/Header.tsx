@@ -1,62 +1,34 @@
 "use client";
 
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import { Globe, Menu, Moon, Sun, X } from "lucide-react";
-import CassiopeiaLogo from "@/assets/Logo/CassiopeiaLogo";
-import { useRouter, usePathname } from "next/navigation";
-import { useLocale, useTranslations } from "next-intl";
-import { Link } from "@/i18n/routing";
+import { Menu, Moon, Sparkles, Sun, X } from "lucide-react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 
-interface ModernHeaderProps {
-  toggleTheme: () => void;
-  theme: string;
-}
-
-type Language = "EN" | "ES" | "SR";
-
-const LANGUAGES: { code: Language; name: string }[] = [
-  { code: "EN", name: "English" },
-  { code: "ES", name: "Espanol" },
-  { code: "SR", name: "Srpski" },
+const navLinks = [
+  { name: "Services", href: "#services" },
+  { name: "Pricing", href: "#pricing" },
+  { name: "Contact", href: "#contact" },
 ];
 
-const normalizePath = (path: string) => {
-  if (!path) return "/";
-  const cleaned = path.replace(/\/$/, "");
-  return cleaned === "" ? "/" : cleaned;
-};
-
-const ModernHeader: React.FC<ModernHeaderProps> = ({ toggleTheme, theme }) => {
-  const t = useTranslations("header");
-  const router = useRouter();
-  const pathname = usePathname();
-  const locale = useLocale();
-
+const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [langOpen, setLangOpen] = useState(false);
+  const [theme, setTheme] = useState<"light" | "dark">(() => {
+    if (typeof window === "undefined") {
+      return "dark";
+    }
 
-  const langRef = useRef<HTMLDivElement>(null);
-  const isDark = theme === "dark";
-  const lang = locale.toUpperCase() as Language;
+    const storedTheme = window.localStorage.getItem("theme");
+    if (storedTheme === "light" || storedTheme === "dark") {
+      return storedTheme;
+    }
 
-  const navLinks = useMemo(
-    () => [
-      { name: t("nav.aboutUs"), href: "/about-us/" },
-      { name: t("nav.recommendationSystems"), href: "/recommendation-systems/" },
-      { name: t("nav.chatbots"), href: "/retrieval-augmented-generation/" },
-      { name: t("nav.frontEnd"), href: "/front-end/" },
-      { name: t("nav.bookDemo"), href: "/book-a-demo/" },
-    ],
-    [t]
-  );
+    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  });
 
   useEffect(() => {
-    document.body.style.overflow = mobileOpen ? "hidden" : "unset";
-    return () => {
-      document.body.style.overflow = "unset";
-    };
-  }, [mobileOpen]);
+    document.documentElement.classList.toggle("dark", theme === "dark");
+  }, [theme]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -66,105 +38,69 @@ const ModernHeader: React.FC<ModernHeaderProps> = ({ toggleTheme, theme }) => {
   }, []);
 
   useEffect(() => {
-    const onDown = (event: MouseEvent) => {
-      if (langRef.current && !langRef.current.contains(event.target as Node)) {
-        setLangOpen(false);
-      }
+    document.body.style.overflow = mobileOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
     };
+  }, [mobileOpen]);
 
-    document.addEventListener("mousedown", onDown);
-    return () => document.removeEventListener("mousedown", onDown);
-  }, []);
-
-  const selectLang = (code: Language) => {
-    const newLocale = code.toLowerCase();
-    const newPath = pathname.replace(/^\/(en|sr|es)(?=\/|$)/, `/${newLocale}`);
-    router.push(newPath || `/${newLocale}`);
-    setLangOpen(false);
-  };
-
-  const isActiveLink = (href: string) => {
-    const currentPath = normalizePath(pathname);
-    const localizedHref = `/${locale}${href}`;
-    return currentPath === normalizePath(localizedHref);
+  const toggleTheme = () => {
+    const nextTheme = theme === "dark" ? "light" : "dark";
+    document.documentElement.classList.toggle("dark", nextTheme === "dark");
+    window.localStorage.setItem("theme", nextTheme);
+    setTheme(nextTheme);
   };
 
   return (
-    <header className="fixed inset-x-0 top-0 z-[1000] px-4 py-3 md:px-6">
+    <header className="fixed inset-x-0 top-0 z-50 px-4 py-4 md:px-6">
       <div
-        className={`mx-auto flex w-full max-w-7xl items-center justify-between rounded-2xl border transition-all duration-300 ${
+        className={`mx-auto flex w-full max-w-7xl items-center justify-between rounded-[1.75rem] border transition-all duration-300 ${
           scrolled
-            ? "border-white/35 bg-white/72 px-4 py-2.5 shadow-[0_14px_46px_rgba(8,16,30,0.14)] backdrop-blur-xl dark:border-white/15 dark:bg-slate-950/60"
-            : "border-white/20 bg-white/50 px-4 py-3 backdrop-blur-md dark:border-white/10 dark:bg-slate-950/35"
+            ? "border-white/20 bg-slate-950/80 px-4 py-2.5 shadow-[0_18px_50px_rgba(15,23,42,0.4)] backdrop-blur-xl"
+            : "border-white/10 bg-slate-950/55 px-4 py-3 backdrop-blur-md"
         }`}
       >
-        <Link
-          href="/"
-          className="flex items-center rounded-xl px-1 py-1 transition-transform duration-200 hover:scale-[1.02]"
-        >
-          <CassiopeiaLogo isDarkMode={isDark} width={152} height={36} className="h-7 w-auto" />
+        <Link href="/" className="flex items-center gap-3 rounded-2xl px-1 py-1">
+          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-400 via-sky-500 to-indigo-600 text-slate-950 shadow-lg shadow-cyan-500/30">
+            <Sparkles className="h-5 w-5" />
+          </div>
+          <div className="leading-none">
+            <p className="text-sm font-medium uppercase tracking-[0.28em] text-cyan-200/80">
+              Cassiopeia
+            </p>
+            <p className="text-lg font-semibold text-white">AI Front Page</p>
+          </div>
         </Link>
 
-        <nav className="hidden items-center gap-1 md:flex">
+        <nav className="hidden items-center gap-2 md:flex">
           {navLinks.map((link) => (
-            <Link
+            <a
               key={link.href}
               href={link.href}
-              className={`rounded-full px-3.5 py-2 text-sm font-medium transition-all duration-200 ${
-                isActiveLink(link.href)
-                  ? "bg-slate-900 text-white shadow-sm dark:bg-white dark:text-slate-900"
-                  : "text-slate-700 hover:bg-slate-900/6 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white"
-              }`}
+              className="rounded-full px-4 py-2 text-sm font-medium text-slate-200 transition hover:bg-white/10 hover:text-white"
             >
               {link.name}
-            </Link>
+            </a>
           ))}
         </nav>
 
-        <div className="flex items-center gap-1.5 md:gap-2">
-          <div ref={langRef} className="relative hidden md:block">
-            <button
-              onClick={() => setLangOpen((prev) => !prev)}
-              className="inline-flex items-center gap-1.5 rounded-full border border-slate-300/80 px-3 py-2 text-xs font-semibold tracking-[0.08em] text-slate-700 transition hover:border-slate-400 hover:text-slate-900 dark:border-slate-700 dark:text-slate-300 dark:hover:border-slate-500 dark:hover:text-white"
-              aria-expanded={langOpen}
-              aria-label="Change language"
-            >
-              <Globe className="h-3.5 w-3.5" />
-              <span>{lang}</span>
-            </button>
-
-            {langOpen && (
-              <div className="absolute right-0 top-full mt-2 w-44 rounded-2xl border border-slate-200 bg-white/95 p-1.5 shadow-xl shadow-slate-900/10 backdrop-blur-xl dark:border-slate-700 dark:bg-slate-900/95">
-                {LANGUAGES.map((item) => (
-                  <button
-                    key={item.code}
-                    onClick={() => selectLang(item.code)}
-                    className={`flex w-full items-center justify-between rounded-xl px-3 py-2 text-sm transition ${
-                      item.code === lang
-                        ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900"
-                        : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
-                    }`}
-                  >
-                    <span>{item.name}</span>
-                    <span className="text-xs opacity-70">{item.code}</span>
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-
+        <div className="flex items-center gap-2">
           <button
             onClick={toggleTheme}
             aria-label="Toggle theme"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-300/80 text-slate-700 transition hover:border-slate-400 hover:text-slate-900 dark:border-slate-700 dark:text-slate-300 dark:hover:border-slate-500 dark:hover:text-white"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/15 text-slate-100 transition hover:border-white/25 hover:bg-white/10"
           >
-            {isDark ? <Sun className="h-4.5 w-4.5 text-amber-400" /> : <Moon className="h-4.5 w-4.5" />}
+            {theme === "dark" ? (
+              <Sun className="h-4.5 w-4.5 text-amber-300" />
+            ) : (
+              <Moon className="h-4.5 w-4.5" />
+            )}
           </button>
 
           <button
             onClick={() => setMobileOpen((prev) => !prev)}
             aria-label="Toggle menu"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-300/80 text-slate-700 transition hover:border-slate-400 hover:text-slate-900 md:hidden dark:border-slate-700 dark:text-slate-300 dark:hover:border-slate-500 dark:hover:text-white"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/15 text-slate-100 transition hover:border-white/25 hover:bg-white/10 md:hidden"
           >
             {mobileOpen ? <X className="h-4.5 w-4.5" /> : <Menu className="h-4.5 w-4.5" />}
           </button>
@@ -172,55 +108,25 @@ const ModernHeader: React.FC<ModernHeaderProps> = ({ toggleTheme, theme }) => {
       </div>
 
       <div
-        className={`mx-auto mt-2 w-full max-w-7xl overflow-hidden rounded-2xl border border-white/35 bg-white/90 shadow-[0_18px_44px_rgba(15,23,42,0.16)] backdrop-blur-xl transition-all duration-300 md:hidden dark:border-white/10 dark:bg-slate-950/90 ${
-          mobileOpen ? "max-h-[85vh] opacity-100" : "pointer-events-none max-h-0 opacity-0"
+        className={`mx-auto mt-2 w-full max-w-7xl overflow-hidden rounded-[1.75rem] border border-white/15 bg-slate-950/92 shadow-[0_18px_44px_rgba(15,23,42,0.35)] backdrop-blur-xl transition-all duration-300 md:hidden ${
+          mobileOpen ? "max-h-96 opacity-100" : "pointer-events-none max-h-0 opacity-0"
         }`}
       >
-        <div className="px-4 pb-4 pt-3">
-          <nav className="space-y-1.5">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={() => setMobileOpen(false)}
-                className={`block rounded-xl px-3.5 py-3 text-base font-medium transition ${
-                  isActiveLink(link.href)
-                    ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900"
-                    : "text-slate-700 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
-                }`}
-              >
-                {link.name}
-              </Link>
-            ))}
-          </nav>
-
-          <div className="my-4 h-px bg-slate-200 dark:bg-slate-800" />
-
-          <p className="mb-2 px-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
-            {t("mobile.language")}
-          </p>
-          <div className="grid grid-cols-3 gap-2">
-            {LANGUAGES.map((item) => (
-              <button
-                key={item.code}
-                onClick={() => {
-                  selectLang(item.code);
-                  setMobileOpen(false);
-                }}
-                className={`rounded-xl border px-2 py-2 text-sm font-medium transition ${
-                  item.code === lang
-                    ? "border-slate-900 bg-slate-900 text-white dark:border-white dark:bg-white dark:text-slate-900"
-                    : "border-slate-200 text-slate-600 hover:border-slate-300 hover:text-slate-900 dark:border-slate-700 dark:text-slate-300 dark:hover:border-slate-500 dark:hover:text-white"
-                }`}
-              >
-                {item.code}
-              </button>
-            ))}
-          </div>
-        </div>
+        <nav className="flex flex-col gap-1 px-4 py-4">
+          {navLinks.map((link) => (
+            <a
+              key={link.href}
+              href={link.href}
+              onClick={() => setMobileOpen(false)}
+              className="rounded-2xl px-4 py-3 text-base font-medium text-slate-100 transition hover:bg-white/10"
+            >
+              {link.name}
+            </a>
+          ))}
+        </nav>
       </div>
     </header>
   );
 };
 
-export default ModernHeader;
+export default Header;

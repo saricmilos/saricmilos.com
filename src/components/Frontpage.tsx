@@ -1,11 +1,9 @@
 "use client";
 
-import React, { useState } from 'react';
-import { ArrowRight, CheckCircle, Zap, Code, Bot, Server, Sparkles } from 'lucide-react';
-import { useTranslations } from 'next-intl';
-import CassiopeiaStars from './CassiopeiaStars';
+import { ArrowRight, Bot, CheckCircle, Code, Server, Sparkles, Zap } from "lucide-react";
+import { useState } from "react";
+import CassiopeiaStars from "./CassiopeiaStars";
 
-// --- Interfaces ---
 interface PricingPlan {
   name: string;
   price: string;
@@ -22,332 +20,315 @@ interface Service {
   gradient: string;
 }
 
-type PricingCategory = 'CHATBOT' | 'WEBSITE' | 'BACKEND' | 'RECOMMENDATION';
+type PricingCategory = "CHATBOT" | "WEBSITE" | "BACKEND" | "RECOMMENDATION";
 
-// --- Main Component ---
-const Frontpage: React.FC = () => {
-  const t = useTranslations('frontpage');
-  const [pricingCategory, setPricingCategory] = useState<PricingCategory>('CHATBOT');
+const pricingPlans: Record<PricingCategory, PricingPlan[]> = {
+  CHATBOT: [
+    {
+      name: "Starter Bot",
+      price: "$299",
+      period: "/ month",
+      features: [
+        "Website chatbot setup",
+        "FAQ knowledge base",
+        "Lead capture flows",
+        "Basic analytics",
+        "Responsive UI",
+        "Email support",
+      ],
+      popular: false,
+    },
+    {
+      name: "Growth Bot",
+      price: "$799",
+      period: "/ month",
+      features: [
+        "Everything in Starter",
+        "Custom tone and prompts",
+        "CRM handoff",
+        "Multistep flows",
+        "Priority support",
+        "Monthly optimization",
+        "Deployment help",
+      ],
+      popular: true,
+    },
+    {
+      name: "Enterprise Bot",
+      price: "Custom",
+      period: "",
+      features: [
+        "Private knowledge sources",
+        "Advanced routing",
+        "Team permissions",
+        "Custom integrations",
+        "Security review",
+        "Load-tested deployment",
+        "Dedicated support",
+      ],
+      popular: false,
+    },
+  ],
+  WEBSITE: [
+    {
+      name: "Landing Site",
+      price: "$1,499",
+      period: "one-time",
+      features: [
+        "Custom homepage design",
+        "Mobile-first responsive build",
+        "Fast performance tuning",
+        "Basic SEO setup",
+        "Contact forms",
+        "Launch support",
+      ],
+      popular: false,
+    },
+    {
+      name: "Business Site",
+      price: "$3,999",
+      period: "one-time",
+      features: [
+        "Multi-page marketing site",
+        "CMS-ready structure",
+        "Animation and polish",
+        "Analytics integration",
+        "Conversion-focused sections",
+        "Performance review",
+        "Post-launch updates",
+      ],
+      popular: true,
+    },
+    {
+      name: "Enterprise Web",
+      price: "Custom",
+      period: "",
+      features: [
+        "Design system alignment",
+        "Content architecture",
+        "Advanced integrations",
+        "Scalable component library",
+        "Accessibility pass",
+        "Technical SEO review",
+        "Team handoff",
+      ],
+      popular: false,
+    },
+  ],
+  BACKEND: [
+    {
+      name: "API Build",
+      price: "$2,499",
+      period: "per project",
+      features: [
+        "REST or RPC API",
+        "Database modeling",
+        "Auth setup",
+        "Validation and error handling",
+        "Deployment support",
+        "Technical documentation",
+      ],
+      popular: false,
+    },
+    {
+      name: "Full-Stack Engine",
+      price: "$5,999",
+      period: "per project",
+      features: [
+        "Frontend + backend delivery",
+        "Admin dashboard",
+        "Monitoring setup",
+        "Cloud deployment",
+        "CI-ready repo",
+        "Security basics",
+        "Launch checklist",
+      ],
+      popular: true,
+    },
+    {
+      name: "Enterprise Backend",
+      price: "Custom",
+      period: "",
+      features: [
+        "Service architecture",
+        "Queue and job workflows",
+        "Observability",
+        "Scaling strategy",
+        "Third-party integrations",
+        "Infrastructure guidance",
+        "Long-term support",
+      ],
+      popular: false,
+    },
+  ],
+  RECOMMENDATION: [
+    {
+      name: "Starter Recs",
+      price: "$499",
+      period: "/ month",
+      features: [
+        "Simple recommendation logic",
+        "Behavior tracking",
+        "Dashboard summary",
+        "Product feed support",
+        "Weekly reporting",
+      ],
+      popular: false,
+    },
+    {
+      name: "Pro Recs",
+      price: "$1,199",
+      period: "/ month",
+      features: [
+        "Personalized ranking",
+        "A/B test support",
+        "Signal enrichment",
+        "API delivery",
+        "Performance review",
+        "Optimization loops",
+      ],
+      popular: true,
+    },
+    {
+      name: "Enterprise Recs",
+      price: "Custom",
+      period: "",
+      features: [
+        "Custom ML strategy",
+        "Large catalog support",
+        "Segmented experiences",
+        "Analytics warehouse sync",
+        "Infrastructure planning",
+        "Dedicated collaboration",
+      ],
+      popular: false,
+    },
+  ],
+};
+
+const services: Service[] = [
+  {
+    title: "AI Chatbots",
+    icon: Bot,
+    desc: "Assist visitors, answer questions, and capture leads around the clock.",
+    features: ["Custom knowledge base", "Brand voice alignment", "Lead qualification"],
+    gradient: "from-fuchsia-500 to-sky-500",
+  },
+  {
+    title: "Frontend Websites",
+    icon: Code,
+    desc: "Marketing sites and polished interfaces built for speed and conversion.",
+    features: ["Responsive layouts", "Performance focused", "Modern interactions"],
+    gradient: "from-sky-500 to-cyan-500",
+  },
+  {
+    title: "Backend Systems",
+    icon: Server,
+    desc: "Reliable APIs and infrastructure for products that need to scale cleanly.",
+    features: ["Secure endpoints", "Database design", "Deployment support"],
+    gradient: "from-cyan-500 to-emerald-500",
+  },
+  {
+    title: "Recommendation Engines",
+    icon: Zap,
+    desc: "Turn user behavior into smarter product suggestions and better engagement.",
+    features: ["Behavior-driven logic", "Personalized outputs", "Measurable results"],
+    gradient: "from-violet-500 to-pink-500",
+  },
+];
+
+const pricingCategories: PricingCategory[] = ["CHATBOT", "WEBSITE", "BACKEND", "RECOMMENDATION"];
+
+const Frontpage = () => {
+  const [pricingCategory, setPricingCategory] = useState<PricingCategory>("CHATBOT");
   const [hoveredService, setHoveredService] = useState<number | null>(null);
 
-  // ── Data ──────────────────────────────────────────────────────────────────
-  const pricingPlans: Record<PricingCategory, PricingPlan[]> = {
-    CHATBOT: [
-      {
-        name: t('pricing.chatbot.starter.name'),
-        price: '$299',
-        period: t('pricing.period.month'),
-        features: [
-          t('pricing.chatbot.starter.f1'),
-          t('pricing.chatbot.starter.f2'),
-          t('pricing.chatbot.starter.f3'),
-          t('pricing.chatbot.starter.f4'),
-          t('pricing.chatbot.starter.f5'),
-          t('pricing.chatbot.starter.f6'),
-        ],
-        popular: false,
-      },
-      {
-        name: t('pricing.chatbot.pro.name'),
-        price: '$799',
-        period: t('pricing.period.month'),
-        features: [
-          t('pricing.chatbot.pro.f1'),
-          t('pricing.chatbot.pro.f2'),
-          t('pricing.chatbot.pro.f3'),
-          t('pricing.chatbot.pro.f4'),
-          t('pricing.chatbot.pro.f5'),
-          t('pricing.chatbot.pro.f6'),
-          t('pricing.chatbot.pro.f7'),
-        ],
-        popular: true,
-      },
-      {
-        name: t('pricing.chatbot.enterprise.name'),
-        price: t('pricing.custom'),
-        period: '',
-        features: [
-          t('pricing.chatbot.enterprise.f1'),
-          t('pricing.chatbot.enterprise.f2'),
-          t('pricing.chatbot.enterprise.f3'),
-          t('pricing.chatbot.enterprise.f4'),
-          t('pricing.chatbot.enterprise.f5'),
-          t('pricing.chatbot.enterprise.f6'),
-          t('pricing.chatbot.enterprise.f7'),
-        ],
-        popular: false,
-      },
-    ],
-    WEBSITE: [
-      {
-        name: t('pricing.website.landing.name'),
-        price: '$1,499',
-        period: t('pricing.period.oneTime'),
-        features: [
-          t('pricing.website.landing.f1'),
-          t('pricing.website.landing.f2'),
-          t('pricing.website.landing.f3'),
-          t('pricing.website.landing.f4'),
-          t('pricing.website.landing.f5'),
-          t('pricing.website.landing.f6'),
-        ],
-        popular: false,
-      },
-      {
-        name: t('pricing.website.business.name'),
-        price: '$3,999',
-        period: t('pricing.period.oneTime'),
-        features: [
-          t('pricing.website.business.f1'),
-          t('pricing.website.business.f2'),
-          t('pricing.website.business.f3'),
-          t('pricing.website.business.f4'),
-          t('pricing.website.business.f5'),
-          t('pricing.website.business.f6'),
-          t('pricing.website.business.f7'),
-        ],
-        popular: true,
-      },
-      {
-        name: t('pricing.website.enterprise.name'),
-        price: t('pricing.custom'),
-        period: '',
-        features: [
-          t('pricing.website.enterprise.f1'),
-          t('pricing.website.enterprise.f2'),
-          t('pricing.website.enterprise.f3'),
-          t('pricing.website.enterprise.f4'),
-          t('pricing.website.enterprise.f5'),
-          t('pricing.website.enterprise.f6'),
-          t('pricing.website.enterprise.f7'),
-        ],
-        popular: false,
-      },
-    ],
-    BACKEND: [
-      {
-        name: t('pricing.backend.api.name'),
-        price: '$2,499',
-        period: t('pricing.period.project'),
-        features: [
-          t('pricing.backend.api.f1'),
-          t('pricing.backend.api.f2'),
-          t('pricing.backend.api.f3'),
-          t('pricing.backend.api.f4'),
-          t('pricing.backend.api.f5'),
-          t('pricing.backend.api.f6'),
-        ],
-        popular: false,
-      },
-      {
-        name: t('pricing.backend.fullstack.name'),
-        price: '$5,999',
-        period: t('pricing.period.project'),
-        features: [
-          t('pricing.backend.fullstack.f1'),
-          t('pricing.backend.fullstack.f2'),
-          t('pricing.backend.fullstack.f3'),
-          t('pricing.backend.fullstack.f4'),
-          t('pricing.backend.fullstack.f5'),
-          t('pricing.backend.fullstack.f6'),
-          t('pricing.backend.fullstack.f7'),
-        ],
-        popular: true,
-      },
-      {
-        name: t('pricing.backend.enterprise.name'),
-        price: t('pricing.custom'),
-        period: '',
-        features: [
-          t('pricing.backend.enterprise.f1'),
-          t('pricing.backend.enterprise.f2'),
-          t('pricing.backend.enterprise.f3'),
-          t('pricing.backend.enterprise.f4'),
-          t('pricing.backend.enterprise.f5'),
-          t('pricing.backend.enterprise.f6'),
-          t('pricing.backend.enterprise.f7'),
-        ],
-        popular: false,
-      },
-    ],
-    RECOMMENDATION: [
-      {
-        name: t('pricing.recsys.starter.name'),
-        price: '$499',
-        period: t('pricing.period.month'),
-        features: [
-          t('pricing.recsys.starter.f1'),
-          t('pricing.recsys.starter.f2'),
-          t('pricing.recsys.starter.f3'),
-          t('pricing.recsys.starter.f4'),
-          t('pricing.recsys.starter.f5'),
-        ],
-        popular: false,
-      },
-      {
-        name: t('pricing.recsys.pro.name'),
-        price: '$1,199',
-        period: t('pricing.period.month'),
-        features: [
-          t('pricing.recsys.pro.f1'),
-          t('pricing.recsys.pro.f2'),
-          t('pricing.recsys.pro.f3'),
-          t('pricing.recsys.pro.f4'),
-          t('pricing.recsys.pro.f5'),
-          t('pricing.recsys.pro.f6'),
-        ],
-        popular: true,
-      },
-      {
-        name: t('pricing.recsys.enterprise.name'),
-        price: t('pricing.custom'),
-        period: '',
-        features: [
-          t('pricing.recsys.enterprise.f1'),
-          t('pricing.recsys.enterprise.f2'),
-          t('pricing.recsys.enterprise.f3'),
-          t('pricing.recsys.enterprise.f4'),
-          t('pricing.recsys.enterprise.f5'),
-          t('pricing.recsys.enterprise.f6'),
-        ],
-        popular: false,
-      },
-    ],
-  };
-
-  const services: Service[] = [
-    {
-      title: t('services.chatbots.title'),
-      icon: Bot,
-      desc: t('services.chatbots.desc'),
-      features: [
-        t('services.chatbots.f1'),
-        t('services.chatbots.f2'),
-        t('services.chatbots.f3'),
-      ],
-      gradient: 'from-purple-500 to-blue-500',
-    },
-    {
-      title: t('services.websites.title'),
-      icon: Code,
-      desc: t('services.websites.desc'),
-      features: [
-        t('services.websites.f1'),
-        t('services.websites.f2'),
-        t('services.websites.f3'),
-      ],
-      gradient: 'from-blue-500 to-cyan-500',
-    },
-    {
-      title: t('services.backend.title'),
-      icon: Server,
-      desc: t('services.backend.desc'),
-      features: [
-        t('services.backend.f1'),
-        t('services.backend.f2'),
-        t('services.backend.f3'),
-      ],
-      gradient: 'from-cyan-500 to-teal-500',
-    },
-    {
-      title: t('services.recsys.title'),
-      icon: Zap,
-      desc: t('services.recsys.desc'),
-      features: [
-        t('services.recsys.f1'),
-        t('services.recsys.f2'),
-        t('services.recsys.f3'),
-      ],
-      gradient: 'from-purple-500 to-pink-500',
-    },
-  ];
-
   const techStack = [
-    'React', 'Next.js', 'TypeScript', 'Python', 'FastAPI',
-    'TensorFlow', 'PostgreSQL', 'MongoDB', 'Docker', 'AWS',
+    "React",
+    "Next.js",
+    "TypeScript",
+    "FastAPI",
+    "Python",
+    "PostgreSQL",
+    "Docker",
+    "AWS",
+    "OpenAI",
+    "Vercel",
   ];
 
-  // ── Render ─────────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-950 text-gray-900 dark:text-slate-100 font-sans antialiased">
-
-      {/* ── Hero ── full-screen with Cassiopeia stars ── */}
-      <section className="relative h-screen flex items-center justify-center overflow-hidden bg-white dark:bg-gradient-to-b dark:from-slate-950 dark:via-black dark:to-slate-950">
-
-        {/* Animated gradient orbs – same effect as Footer */}
+    <main className="min-h-screen bg-white text-slate-900 transition-colors dark:bg-slate-950 dark:text-slate-100">
+      <section className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[radial-gradient(circle_at_top,rgba(14,165,233,0.15),transparent_35%),linear-gradient(180deg,#f8fbff_0%,#eef4ff_42%,#ffffff_100%)] dark:bg-[radial-gradient(circle_at_top,rgba(56,189,248,0.18),transparent_35%),linear-gradient(180deg,#020617_0%,#020617_35%,#000000_100%)]">
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div
-            className="absolute -top-48 -left-32 w-[600px] h-[600px] rounded-full blur-3xl opacity-25 dark:opacity-10 bg-blue-400 dark:bg-blue-600"
-            style={{ animation: 'heroFloat 25s ease-in-out infinite' }}
+            className="absolute -left-24 top-16 h-[420px] w-[420px] rounded-full bg-sky-400/20 blur-3xl dark:bg-sky-500/15"
+            style={{ animation: "heroFloat 24s ease-in-out infinite" }}
           />
           <div
-            className="absolute top-1/4 right-0 w-[500px] h-[500px] rounded-full blur-3xl opacity-20 dark:opacity-10 bg-purple-400 dark:bg-purple-600"
-            style={{ animation: 'heroFloat 25s ease-in-out infinite 8s' }}
+            className="absolute right-0 top-1/4 h-[460px] w-[460px] rounded-full bg-fuchsia-400/20 blur-3xl dark:bg-violet-500/15"
+            style={{ animation: "heroFloat 24s ease-in-out infinite 8s" }}
           />
           <div
-            className="absolute bottom-0 left-1/3 w-[400px] h-[400px] rounded-full blur-3xl opacity-20 dark:opacity-10 bg-cyan-400 dark:bg-cyan-600"
-            style={{ animation: 'heroFloat 25s ease-in-out infinite 16s' }}
+            className="absolute bottom-0 left-1/3 h-[360px] w-[360px] rounded-full bg-cyan-400/20 blur-3xl dark:bg-cyan-500/15"
+            style={{ animation: "heroFloat 24s ease-in-out infinite 15s" }}
           />
         </div>
 
         <CassiopeiaStars />
 
-        <div className="relative z-10 max-w-6xl mx-auto px-6 text-center pt-32 sm:pt-0">
-          {/* badge */}
-          <div className="inline-block mb-8 opacity-0 animate-fadeIn">
-            <span className="text-sm font-medium tracking-[0.3em] uppercase text-gray-600 dark:text-slate-300">
-              {t('hero.badge')}
+        <div className="relative z-10 mx-auto flex max-w-6xl flex-col items-center px-6 pb-20 pt-36 text-center sm:pt-32">
+          <div className="mb-8 inline-block opacity-0 animate-fadeIn">
+            <span className="rounded-full border border-sky-500/20 bg-white/60 px-4 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-slate-600 backdrop-blur-sm dark:border-white/10 dark:bg-white/5 dark:text-slate-300">
+              Digital products with real momentum
             </span>
           </div>
 
-          {/* headline */}
           <h1
-            className="text-5xl md:text-6xl lg:text-7xl font-light mb-6 tracking-tight leading-tight opacity-0 animate-fadeIn text-gray-900 dark:text-white"
-            style={{ animationDelay: '0.2s' }}
+            className="max-w-5xl text-5xl font-light leading-tight tracking-tight opacity-0 animate-fadeIn md:text-6xl lg:text-7xl"
+            style={{ animationDelay: "0.2s" }}
           >
-            {t('hero.headline1')}<br />
-            <span className="font-normal bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-600 dark:from-purple-400 dark:via-blue-400 dark:to-cyan-400 bg-clip-text text-transparent">
-              {t('hero.headline2')}
+            Websites and AI systems
+            <br />
+            <span className="bg-gradient-to-r from-fuchsia-600 via-sky-600 to-cyan-600 bg-clip-text font-medium text-transparent dark:from-fuchsia-400 dark:via-sky-400 dark:to-cyan-300">
+              built around the Cassiopeia spark
             </span>
           </h1>
 
-          {/* sub-copy */}
           <p
-            className="text-base md:text-lg font-light text-gray-700 dark:text-slate-300 max-w-2xl mx-auto mb-10 leading-relaxed opacity-0 animate-fadeIn"
-            style={{ animationDelay: '0.4s' }}
+            className="mt-6 max-w-2xl text-lg leading-relaxed text-slate-600 opacity-0 animate-fadeIn dark:text-slate-300"
+            style={{ animationDelay: "0.4s" }}
           >
-            {t('hero.subCopy')}
+            Launch a polished front page, chatbot experience, or backend foundation that
+            feels intentional from day one and is ready to grow with your business.
           </p>
 
-          {/* CTA buttons */}
           <div
-            className="flex flex-col sm:flex-row gap-6 justify-center opacity-0 animate-fadeIn"
-            style={{ animationDelay: '0.6s' }}
+            className="mt-10 flex flex-col gap-5 opacity-0 animate-fadeIn sm:flex-row"
+            style={{ animationDelay: "0.6s" }}
           >
             <a
               href="#services"
-              className="group px-8 py-4 bg-gray-900 dark:bg-white text-white dark:text-slate-900 font-medium rounded-full transition-all duration-300 hover:bg-gray-800 dark:hover:bg-slate-100 flex items-center justify-center shadow-lg shadow-blue-500/20"
+              className="group inline-flex items-center justify-center rounded-full bg-slate-950 px-8 py-4 font-medium text-white shadow-lg shadow-sky-500/20 transition hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-100"
             >
-              {t('hero.ctaExplore')}
-              <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              Explore services
+              <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
             </a>
             <a
               href="#contact"
-              className="px-8 py-4 border-2 border-gray-400 dark:border-slate-300 text-gray-900 dark:text-white font-medium rounded-full transition-all duration-300 hover:bg-gray-100 dark:hover:bg-white/10 hover:border-gray-500 dark:hover:border-slate-200 backdrop-blur-sm"
+              className="inline-flex items-center justify-center rounded-full border border-slate-300 bg-white/60 px-8 py-4 font-medium text-slate-900 backdrop-blur-sm transition hover:border-slate-400 hover:bg-white dark:border-white/15 dark:bg-white/5 dark:text-white dark:hover:border-white/30 dark:hover:bg-white/10"
             >
-              {t('hero.ctaContact')}
+              Start a project
             </a>
           </div>
 
-          {/* tech-stack pills */}
           <div
             className="mt-16 flex flex-wrap justify-center gap-3 opacity-0 animate-fadeIn"
-            style={{ animationDelay: '0.8s' }}
+            style={{ animationDelay: "0.8s" }}
           >
-            {techStack.map((tech, idx) => (
+            {techStack.map((tech) => (
               <span
-                key={idx}
-                className="px-4 py-2 rounded-full text-sm font-light border border-gray-300 dark:border-slate-700 text-gray-600 dark:text-slate-400 bg-white/60 dark:bg-slate-800/40 backdrop-blur-sm"
+                key={tech}
+                className="rounded-full border border-slate-300/70 bg-white/75 px-4 py-2 text-sm text-slate-600 backdrop-blur-sm dark:border-white/10 dark:bg-white/5 dark:text-slate-300"
               >
                 {tech}
               </span>
@@ -355,59 +336,64 @@ const Frontpage: React.FC = () => {
           </div>
         </div>
 
-        {/* scroll indicator */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 opacity-0 animate-fadeIn" style={{ animationDelay: '1s' }}>
-          <div className="w-[1px] h-16 bg-gradient-to-b from-gray-400 dark:from-slate-400 to-transparent" />
+        <div
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 opacity-0 animate-fadeIn"
+          style={{ animationDelay: "1s" }}
+        >
+          <div className="h-16 w-px bg-gradient-to-b from-slate-400 to-transparent dark:from-slate-500" />
         </div>
       </section>
 
-      {/* ── Services ── compact 4-col grid ── */}
-      <section id="services" className="relative py-32 px-6 border-t border-gray-200 dark:border-slate-800">
-        <div className="max-w-7xl mx-auto">
+      <section id="services" className="border-t border-slate-200 px-6 py-28 dark:border-slate-800">
+        <div className="mx-auto max-w-7xl">
           <div className="mb-16">
-            <div className="text-sm font-medium tracking-[0.3em] uppercase text-gray-500 dark:text-slate-500 mb-6">
-              {t('services.eyebrow')}
-            </div>
-            <h2 className="text-4xl md:text-5xl font-light tracking-tight">
+            <p className="mb-5 text-sm font-semibold uppercase tracking-[0.3em] text-slate-500 dark:text-slate-500">
+              Services
+            </p>
+            <h2 className="max-w-3xl text-4xl font-light tracking-tight md:text-5xl">
+              A sharp front page is stronger when the product behind it is just as solid.
             </h2>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
             {services.map((service, idx) => {
               const Icon = service.icon;
               const isHovered = hoveredService === idx;
 
               return (
                 <div
-                  key={idx}
-                  className="group relative p-8 rounded-2xl transition-all duration-500 bg-white border border-gray-200 dark:bg-slate-900 dark:border-slate-700 hover:border-gray-300 dark:hover:border-slate-600 hover:shadow-lg"
+                  key={service.title}
+                  className="group relative rounded-3xl border border-slate-200 bg-white p-8 transition-all duration-500 hover:-translate-y-1 hover:border-slate-300 hover:shadow-xl dark:border-slate-800 dark:bg-slate-900 dark:hover:border-slate-700"
                   onMouseEnter={() => setHoveredService(idx)}
                   onMouseLeave={() => setHoveredService(null)}
                 >
-                  {/* subtle gradient wash on hover */}
-                  <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${service.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-500`} />
+                  <div
+                    className={`absolute inset-0 rounded-3xl bg-gradient-to-br ${service.gradient} opacity-0 transition-opacity duration-500 group-hover:opacity-8`}
+                  />
 
                   <div className="relative z-10">
                     <div
-                      className={`w-14 h-14 rounded-xl bg-gradient-to-br ${service.gradient} flex items-center justify-center mb-6 transition-all duration-500 shadow-lg ${isHovered ? 'scale-110 rotate-3' : ''}`}
+                      className={`mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br ${service.gradient} shadow-lg transition-transform duration-500 ${
+                        isHovered ? "scale-110 rotate-3" : ""
+                      }`}
                     >
-                      <Icon className="w-7 h-7 text-white" />
-                      {isHovered && (
-                        <Sparkles size={12} className="absolute -top-1 -right-1 text-white animate-ping" />
-                      )}
+                      <Icon className="h-7 w-7 text-white" />
+                      {isHovered ? (
+                        <Sparkles className="absolute -right-1 -top-1 h-3.5 w-3.5 animate-ping text-white" />
+                      ) : null}
                     </div>
 
-                    <h3 className="text-xl font-light tracking-tight mb-3 text-gray-900 dark:text-slate-100">
-                      {service.title}
-                    </h3>
-                    <p className="mb-5 text-gray-600 dark:text-slate-400 leading-relaxed text-sm">
+                    <h3 className="mb-3 text-2xl font-light tracking-tight">{service.title}</h3>
+                    <p className="mb-5 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
                       {service.desc}
                     </p>
-                    <ul className="space-y-2">
-                      {service.features.map((f, i) => (
-                        <li key={i} className="flex items-start">
-                          <CheckCircle className="w-4 h-4 text-blue-500 dark:text-blue-400 mr-2 mt-0.5 flex-shrink-0" />
-                          <span className="text-sm text-gray-600 dark:text-slate-400">{f}</span>
+                    <ul className="space-y-2.5">
+                      {service.features.map((feature) => (
+                        <li key={feature} className="flex items-start">
+                          <CheckCircle className="mr-2 mt-0.5 h-4 w-4 flex-shrink-0 text-sky-500 dark:text-sky-400" />
+                          <span className="text-sm text-slate-600 dark:text-slate-400">
+                            {feature}
+                          </span>
                         </li>
                       ))}
                     </ul>
@@ -419,154 +405,155 @@ const Frontpage: React.FC = () => {
         </div>
       </section>
 
-      {/* ── Pricing ── */}
-      <section id="pricing" className="relative py-32 px-6 border-t border-gray-200 dark:border-slate-800 bg-gray-50 dark:bg-slate-900/50">
-        <div className="max-w-7xl mx-auto">
-          {/* header */}
+      <section
+        id="pricing"
+        className="border-t border-slate-200 bg-slate-50 px-6 py-28 dark:border-slate-800 dark:bg-slate-900/40"
+      >
+        <div className="mx-auto max-w-7xl">
           <div className="mb-12">
-            <div className="text-sm font-medium tracking-[0.3em] uppercase text-gray-500 dark:text-slate-500 mb-6">
-              {t('pricing.eyebrow')}
-            </div>
-            <h2 className="text-4xl md:text-5xl font-light tracking-tight">
+            <p className="mb-5 text-sm font-semibold uppercase tracking-[0.3em] text-slate-500 dark:text-slate-500">
+              Pricing
+            </p>
+            <h2 className="text-4xl font-light tracking-tight md:text-5xl">
+              Flexible packages for launches, upgrades, and bigger product bets.
             </h2>
-            <p className="text-base text-gray-600 dark:text-slate-400 mt-4">
-              {t('pricing.subCopy')}
+            <p className="mt-4 max-w-2xl text-base text-slate-600 dark:text-slate-400">
+              Pick the category closest to your goal and use it as a starting point for scope.
             </p>
           </div>
 
-          {/* category tabs ── styled as subtle pills */}
-          <div className="flex flex-wrap gap-3 mb-16">
-            {(['CHATBOT', 'WEBSITE', 'BACKEND', 'RECOMMENDATION'] as PricingCategory[]).map((cat) => (
+          <div className="mb-16 flex flex-wrap gap-3">
+            {pricingCategories.map((category) => (
               <button
-                key={cat}
-                onClick={() => setPricingCategory(cat)}
-                className={`px-6 py-3 rounded-full text-sm font-medium tracking-[0.15em] uppercase transition-all duration-300 ${
-                  pricingCategory === cat
-                    ? 'bg-gray-900 dark:bg-slate-100 text-white dark:text-slate-900 shadow-lg'
-                    : 'bg-white dark:bg-slate-800 text-gray-600 dark:text-slate-400 border border-gray-200 dark:border-slate-700 hover:border-gray-400 dark:hover:border-slate-500'
+                key={category}
+                onClick={() => setPricingCategory(category)}
+                className={`rounded-full px-6 py-3 text-sm font-semibold tracking-[0.15em] uppercase transition-all duration-300 ${
+                  pricingCategory === category
+                    ? "bg-slate-950 text-white shadow-lg dark:bg-white dark:text-slate-950"
+                    : "border border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:text-slate-900 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-400 dark:hover:border-slate-500 dark:hover:text-white"
                 }`}
               >
-                {cat}
+                {category}
               </button>
             ))}
           </div>
 
-          {/* pricing cards */}
-          <div className="grid md:grid-cols-3 gap-8">
-            {pricingPlans[pricingCategory].map((plan, idx) => (
+          <div className="grid gap-8 md:grid-cols-3">
+            {pricingPlans[pricingCategory].map((plan) => (
               <div
-                key={idx}
-                className={`relative rounded-2xl p-8 transition-all duration-300 ${
+                key={plan.name}
+                className={`relative rounded-3xl p-8 transition-all duration-300 ${
                   plan.popular
-                    ? 'bg-gray-900 dark:bg-slate-800 text-white dark:text-slate-100 shadow-2xl shadow-black/10 dark:shadow-black/30 scale-105'
-                    : 'bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-slate-100 hover:shadow-lg'
+                    ? "scale-[1.02] bg-slate-950 text-white shadow-2xl shadow-slate-950/10 dark:bg-slate-800"
+                    : "border border-slate-200 bg-white text-slate-900 hover:shadow-lg dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
                 }`}
               >
-                {plan.popular && (
-                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                    <span className="px-5 py-1.5 bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-600 text-white text-xs font-medium tracking-[0.2em] uppercase rounded-full shadow-lg">
-                      {t('pricing.mostPopular')}
+                {plan.popular ? (
+                  <div className="absolute -top-4 left-1/2 -translate-x-1/2">
+                    <span className="rounded-full bg-gradient-to-r from-fuchsia-600 via-sky-600 to-cyan-600 px-5 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-white shadow-lg">
+                      Most popular
                     </span>
                   </div>
-                )}
+                ) : null}
 
-                <h3 className="text-2xl font-light tracking-tight mb-2">
-                  {plan.name}
-                </h3>
+                <h3 className="mb-2 text-2xl font-light tracking-tight">{plan.name}</h3>
 
                 <div className="mb-8">
-                  <span
-                    className={`text-4xl font-extralight ${
-                      plan.popular
-                        ? 'text-white dark:text-slate-100'
-                        : 'text-gray-900 dark:text-slate-100'
-                    }`}
-                  >
-                    {plan.price}
-                  </span>
-                  {plan.period && (
-                    <span className={`ml-1 text-lg ${plan.popular ? 'text-gray-300 dark:text-slate-400' : 'text-gray-500 dark:text-slate-500'}`}>
+                  <span className="text-4xl font-extralight">{plan.price}</span>
+                  {plan.period ? (
+                    <span
+                      className={`ml-1 text-lg ${
+                        plan.popular ? "text-slate-300" : "text-slate-500 dark:text-slate-400"
+                      }`}
+                    >
                       {plan.period}
                     </span>
-                  )}
+                  ) : null}
                 </div>
 
-                <div className="space-y-4 mb-10">
-                  {plan.features.map((feature, i) => (
-                    <div key={i} className="flex items-start gap-4">
+                <div className="mb-10 space-y-4">
+                  {plan.features.map((feature) => (
+                    <div key={feature} className="flex items-start gap-4">
                       <div
-                        className={`w-1 h-1 rounded-full mt-3 flex-shrink-0 ${
-                          plan.popular ? 'bg-cyan-400' : 'bg-blue-500 dark:bg-blue-400'
+                        className={`mt-3 h-1 w-1 flex-shrink-0 rounded-full ${
+                          plan.popular ? "bg-cyan-400" : "bg-sky-500"
                         }`}
                       />
-                      <span className={`${plan.popular ? 'text-gray-300 dark:text-slate-300' : 'text-gray-700 dark:text-slate-300'}`}>
+                      <span className={plan.popular ? "text-slate-300" : "text-slate-700 dark:text-slate-300"}>
                         {feature}
                       </span>
                     </div>
                   ))}
                 </div>
 
-                <button
-                  className={`w-full py-3 rounded-full font-medium transition-all duration-300 ${
+                <a
+                  href="#contact"
+                  className={`inline-flex w-full items-center justify-center rounded-full py-3 font-medium transition-all duration-300 ${
                     plan.popular
-                      ? 'bg-white text-gray-900 hover:bg-slate-100'
-                      : 'bg-gray-900 dark:bg-slate-100 text-white dark:text-slate-900 hover:bg-gray-800 dark:hover:bg-white'
+                      ? "bg-white text-slate-950 hover:bg-slate-100"
+                      : "bg-slate-950 text-white hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-100"
                   }`}
                 >
-                  {plan.price === t('pricing.custom') ? t('pricing.contactSales') : t('pricing.getStarted')}
-                </button>
+                  {plan.price === "Custom" ? "Talk about scope" : "Get started"}
+                </a>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── CTA ── */}
-      <section id="contact" className="relative py-32 px-6 border-t border-gray-200 dark:border-slate-800">
-        <div className="max-w-4xl mx-auto text-center space-y-12">
-          <h2 className="text-4xl md:text-5xl font-light tracking-tight">
-            {t('cta.headline')}
+      <section id="contact" className="border-t border-slate-200 px-6 py-28 dark:border-slate-800">
+        <div className="mx-auto max-w-4xl text-center">
+          <h2 className="text-4xl font-light tracking-tight md:text-5xl">
+            Ready to turn the first impression into a full product story?
           </h2>
-          <p className="text-base text-gray-600 dark:text-slate-400 leading-relaxed max-w-xl mx-auto">
-            {t('cta.subCopy')}
+          <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-slate-600 dark:text-slate-400">
+            Whether you need a front page, an AI assistant, or the backend behind it,
+            let&apos;s shape something clean, fast, and memorable.
           </p>
-          <div>
+          <div className="mt-10">
             <a
               href="mailto:contact@cassiopeiai.com"
-              className="inline-flex items-center px-8 py-4 bg-gray-900 dark:bg-slate-100 text-white dark:text-slate-900 font-medium rounded-full transition-all duration-300 hover:bg-gray-800 dark:hover:bg-white group"
+              className="group inline-flex items-center rounded-full bg-slate-950 px-8 py-4 font-medium text-white transition hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-100"
             >
-              {t('cta.button')}
-              <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              contact@cassiopeiai.com
+              <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
             </a>
           </div>
-          <p className="text-gray-500 dark:text-slate-500">contact@cassiopeiai.com</p>
         </div>
       </section>
 
-      {/* ── Shared animations ── */}
       <style jsx>{`
         @keyframes heroFloat {
-          0%, 100% { transform: translate(0, 0) scale(1); }
-          33% { transform: translate(50px, -50px) scale(1.1); }
-          66% { transform: translate(-40px, 40px) scale(0.9); }
+          0%,
+          100% {
+            transform: translate(0, 0) scale(1);
+          }
+          33% {
+            transform: translate(50px, -50px) scale(1.08);
+          }
+          66% {
+            transform: translate(-40px, 30px) scale(0.92);
+          }
         }
+
         @keyframes fadeIn {
           from {
             opacity: 0;
-            transform: translateY(20px);
+            transform: translateY(18px);
           }
           to {
             opacity: 1;
             transform: translateY(0);
           }
         }
+
         .animate-fadeIn {
-          animation: fadeIn 1s ease-out forwards;
+          animation: fadeIn 0.9s ease-out forwards;
         }
       `}</style>
-    </div>
+    </main>
   );
 };
 
 export default Frontpage;
-
