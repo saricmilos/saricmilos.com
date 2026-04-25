@@ -416,56 +416,47 @@ const Frontpage = () => {
         />
 
         {/* ── Page layout ─────────────────────────────────────────────────── */}
-        <div style={{ position: "relative", zIndex: 10, display: "flex", flexDirection: "column", minHeight: "100vh", padding: "60px 64px 60px" }}>
+        <div style={{ position: "relative", zIndex: 10, display: "flex", flexDirection: "column", minHeight: "100vh", padding: "40px 64px 60px" }}>
 
 
 
-          {/* ── Hero: two-column layout ──────────────────────────────────────── */}
+          {/* ── Hero: full-width layout ──────────────────────────────────────── */}
           <div style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1.1fr",
-            gap: 80,
-            alignItems: "center",
+            display: "flex",
+            flexDirection: "column",
+            gap: 40,
             flex: 1,
             width: "100%",
+            paddingTop: 40,
             opacity: mounted ? 1 : 0,
             transform: mounted ? "translateY(0)" : "translateY(20px)",
             transition: `opacity 1.2s 0.2s ${ease}, transform 1.2s 0.2s ${ease}`,
           }}>
 
-            {/* ── LEFT: Photo ─────────────────────────────────────────────── */}
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 24 }}>
+            {/* ── TOP HERO: Photo + Identity side by side ─────────────────── */}
+            <div style={{ display: "grid", gridTemplateColumns: "380px 1fr", gap: 48, alignItems: "stretch" }}>
 
-              {/* Photo frame */}
+              {/* Photo — large, rectangular, modern */}
               <div style={{ position: "relative" }}>
-                {/* Outer glow ring */}
+                {/* Glow border */}
                 <div style={{
-                  position: "absolute", inset: -3,
-                  borderRadius: "50%",
-                  background: "linear-gradient(135deg,rgba(6,182,212,0.5),rgba(99,102,241,0.5),rgba(139,92,246,0.5))",
-                  filter: "blur(6px)",
+                  position: "absolute", inset: -2,
+                  borderRadius: 28,
+                  background: "linear-gradient(135deg,rgba(6,182,212,0.5),rgba(99,102,241,0.4),rgba(139,92,246,0.5))",
+                  filter: "blur(8px)",
                   animation: "glowPulse 4s ease-in-out infinite",
                 }} />
-                {/* Spinning dashed orbit */}
-                <div className="logo-spin" style={{ position: "absolute", inset: -14, borderRadius: "50%", border: "1px dashed rgba(99,102,241,0.3)" }} />
-                <div style={{
-                  position: "absolute", inset: -20,
-                  borderRadius: "50%",
-                  border: "1px solid rgba(6,182,212,0.15)",
-                  animation: "pulseRing 6s ease-in-out infinite",
-                }} />
-
                 {/* Photo container */}
                 <div style={{
-                  width: 220, height: 220,
-                  borderRadius: "50%",
+                  width: "100%",
+                  height: 460,
+                  borderRadius: 24,
                   overflow: "hidden",
-                  border: "2px solid rgba(6,182,212,0.4)",
+                  border: "1px solid rgba(6,182,212,0.35)",
                   background: "linear-gradient(135deg,rgba(15,23,42,0.9),rgba(30,41,59,0.9))",
                   position: "relative",
-                  boxShadow: "0 0 40px rgba(99,102,241,0.2), 0 20px 60px rgba(2,6,23,0.8)",
+                  boxShadow: "0 0 60px rgba(99,102,241,0.18), 0 30px 80px rgba(2,6,23,0.85)",
                 }}>
-                  {/* Placeholder silhouette while photo loads */}
                   {!photoLoaded && (
                     <div style={{
                       position: "absolute", inset: 0,
@@ -480,46 +471,72 @@ const Frontpage = () => {
                     </div>
                   )}
                   <img
-                    src="/your-photo.jpg"
+                    src="/Me.jpg"
                     alt="Milos Saric"
                     onLoad={() => setPhotoLoaded(true)}
                     style={{
                       width: "100%", height: "100%",
                       objectFit: "cover",
+                      objectPosition: "center top",
                       opacity: photoLoaded ? 1 : 0,
                       transition: "opacity 0.6s ease",
                       animation: photoLoaded ? "photoReveal 0.8s ease forwards" : "none",
                     }}
                   />
-                </div>
-
-                {/* Floating "PhD energy" badge */}
-                <div
-                  className="badge-float"
-                  style={{
-                    position: "absolute",
-                    bottom: -8,
-                    right: -16,
-                    padding: "6px 12px",
-                    borderRadius: 20,
-                    background: "rgba(15,23,42,0.95)",
-                    border: "1px solid rgba(6,182,212,0.45)",
-                    backdropFilter: "blur(12px)",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 6,
-                    boxShadow: "0 0 20px rgba(6,182,212,0.2)",
-                  }}
-                >
-                  <span style={{ fontSize: 14 }}>🎓</span>
-                  <span style={{ fontFamily: "'Syne',sans-serif", fontSize: 9, fontWeight: 800, letterSpacing: "0.15em", textTransform: "uppercase", color: "rgba(6,182,212,0.9)" }}>MSc Thesis</span>
+                  {/* Subtle bottom fade on photo */}
+                  <div style={{
+                    position: "absolute", bottom: 0, left: 0, right: 0, height: 100,
+                    background: "linear-gradient(to top, rgba(2,8,23,0.6), transparent)",
+                    pointerEvents: "none",
+                  }} />
                 </div>
               </div>
 
-              {/* ── Socials ────────────────────────────────────────────────── */}
-              <div style={{ display: "flex", flexDirection: "column", gap: 10, width: "100%", maxWidth: 260 }}>
+              {/* ── RIGHT side: identity + socials ────────────────────────── */}
+              <div style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", gap: 28 }}>
+
+                {/* Title block */}
+                <div>
+                  <h1 style={{
+                    fontFamily: "'Syne',sans-serif",
+                    fontSize: "clamp(32px,4.5vw,54px)",
+                    fontWeight: 800,
+                    letterSpacing: "-0.03em",
+                    color: "#f1f5f9",
+                    lineHeight: 1.05,
+                    marginBottom: 10,
+                  }}>
+                    Milos Saric
+                  </h1>
+
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 16 }}>
+                    {["ML / AI Engineer", "Data Scientist"].map((role) => (
+                      <span key={role} style={{
+                        fontFamily: "'Syne',sans-serif",
+                        fontSize: 13,
+                        fontWeight: 700,
+                        letterSpacing: "0.06em",
+                        padding: "5px 14px",
+                        borderRadius: 20,
+                        background: "rgba(99,102,241,0.12)",
+                        border: "1px solid rgba(99,102,241,0.3)",
+                        color: "rgba(199,210,254,0.9)",
+                      }}>
+                        {role}
+                      </span>
+                    ))}
+                  </div>
+
+                  <p style={{ fontSize: 15, color: "rgba(148,163,184,0.65)", lineHeight: 1.7, maxWidth: 440 }}>
+                    I teach machines to think, occasionally wonder if they&apos;re judging me back, and ship things that actually work — not just in notebooks.
+                  </p>
+                </div>
+
+                {/* ── Socials ────────────────────────────────────────────────── */}
+                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                 <SectionLabel>Find me online</SectionLabel>
 
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
                 <GalaxyLink
                   href="https://instagram.com/sariccmilos"
                   label="Instagram"
@@ -568,10 +585,13 @@ const Frontpage = () => {
                     Proof that I once suffered for science 📄✨
                   </span>
                 </a>
+                </div>
 
                 {/* Divider */}
                 <div style={{ height: 1, background: "rgba(51,65,85,0.5)", margin: "4px 0" }} />
 
+                {/* Project links row */}
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
                 {/* Cassiopeia AI — serious business link */}
                 <a
                   href="https://cassiopeiai.com/"
@@ -642,55 +662,14 @@ const Frontpage = () => {
                     The unfiltered version. Enter at own risk 👀
                   </span>
                 </a>
-              </div>
-            </div>
-
-            {/* ── RIGHT: Info ──────────────────────────────────────────────── */}
-            <div style={{ display: "flex", flexDirection: "column", gap: 32 }}>
-
-              {/* Title block */}
-              <div>
-                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
-                  <div style={{ height: 1, width: 32, background: "linear-gradient(90deg,transparent,rgba(6,182,212,0.7))" }} />
-                  <span style={{ fontFamily: "'Syne',sans-serif", fontSize: 9, fontWeight: 800, letterSpacing: "0.28em", textTransform: "uppercase", color: "rgba(6,182,212,0.7)" }}>
-                    Available for hire • Probably caffeinated
-                  </span>
                 </div>
-
-                <h1 style={{
-                  fontFamily: "'Syne',sans-serif",
-                  fontSize: "clamp(32px,4.5vw,54px)",
-                  fontWeight: 800,
-                  letterSpacing: "-0.03em",
-                  color: "#f1f5f9",
-                  lineHeight: 1.05,
-                  marginBottom: 10,
-                }}>
-                  Milos Saric
-                </h1>
-
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 16 }}>
-                  {["ML / AI Engineer", "Data Scientist"].map((role) => (
-                    <span key={role} style={{
-                      fontFamily: "'Syne',sans-serif",
-                      fontSize: 13,
-                      fontWeight: 700,
-                      letterSpacing: "0.06em",
-                      padding: "5px 14px",
-                      borderRadius: 20,
-                      background: "rgba(99,102,241,0.12)",
-                      border: "1px solid rgba(99,102,241,0.3)",
-                      color: "rgba(199,210,254,0.9)",
-                    }}>
-                      {role}
-                    </span>
-                  ))}
-                </div>
-
-                <p style={{ fontSize: 15, color: "rgba(148,163,184,0.65)", lineHeight: 1.7, maxWidth: 440 }}>
-                  I teach machines to think, occasionally wonder if they&apos;re judging me back, and ship things that actually work — not just in notebooks.
-                </p>
               </div>
+
+            </div>{/* end right column */}
+            </div>{/* end top hero grid */}
+
+            {/* ── BOTTOM: Stack + Quick facts ──────────────────────────────────── */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
 
               {/* ── Stack ──────────────────────────────────────────────────── */}
               <div style={{
@@ -744,8 +723,9 @@ const Frontpage = () => {
                 ))}
               </div>
 
-            </div>
-          </div>
+            </div>{/* end bottom section */}
+
+          </div>{/* end outer flex column */}
 
           {/* ── Footer ──────────────────────────────────────────────────────── */}
           <div style={{
