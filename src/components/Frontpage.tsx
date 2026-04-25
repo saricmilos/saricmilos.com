@@ -318,10 +318,18 @@ const ThesisIcon = () => (
 const Frontpage = () => {
   const [mounted, setMounted] = useState(false);
   const [photoLoaded, setPhotoLoaded] = useState(false);
+  const photoRef = useRef<HTMLImageElement>(null);
 
   useEffect(() => {
     const t = setTimeout(() => setMounted(true), 80);
     return () => clearTimeout(t);
+  }, []);
+
+  useEffect(() => {
+    const photo = photoRef.current;
+    if (photo?.complete) {
+      setPhotoLoaded(true);
+    }
   }, []);
 
   const ease = "cubic-bezier(0.22,1,0.36,1)";
@@ -471,9 +479,13 @@ const Frontpage = () => {
                     </div>
                   )}
                   <img
+                    ref={photoRef}
                     src="/Me.jpg"
                     alt="Milos Saric"
+                    loading="eager"
+                    fetchPriority="high"
                     onLoad={() => setPhotoLoaded(true)}
+                    onError={() => setPhotoLoaded(true)}
                     style={{
                       width: "100%", height: "100%",
                       objectFit: "cover",
