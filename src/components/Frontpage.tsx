@@ -1,558 +1,775 @@
 "use client";
 
-import { ArrowRight, Bot, CheckCircle, Code, Server, Sparkles, Zap } from "lucide-react";
-import { useState } from "react";
-import CassiopeiaStars from "./CassiopeiaStars";
+import { useEffect, useRef, useState } from "react";
 
-interface PricingPlan {
-  name: string;
-  price: string;
-  period: string;
-  features: string[];
-  popular: boolean;
+// ─── Cassiopeia Stars Canvas ──────────────────────────────────────────────────
+function CassiopeiaStars({ className = "absolute inset-0 h-full w-full" }: { className?: string }) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const setCanvasSize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    setCanvasSize();
+    window.addEventListener("resize", setCanvasSize);
+
+    type Star = { x: number; y: number; radius: number; opacity: number; twinkleSpeed: number; twinklePhase: number };
+    const stars: Star[] = [];
+    for (let i = 0; i < 300; i++) {
+      stars.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        radius: Math.random() * 1.4 + 0.3,
+        opacity: Math.random() * 0.55 + 0.25,
+        twinkleSpeed: Math.random() * 0.018 + 0.006,
+        twinklePhase: Math.random() * Math.PI * 2,
+      });
+    }
+
+    const cassiopeia = [
+      { x: canvas.width * 0.62, y: canvas.height * 0.14 },
+      { x: canvas.width * 0.68, y: canvas.height * 0.21 },
+      { x: canvas.width * 0.74, y: canvas.height * 0.15 },
+      { x: canvas.width * 0.80, y: canvas.height * 0.24 },
+      { x: canvas.width * 0.86, y: canvas.height * 0.17 },
+    ];
+
+    const nebulae = [
+      { x: canvas.width * 0.12, y: canvas.height * 0.25, r: 200, cA: "99,102,241", cB: "139,92,246" },
+      { x: canvas.width * 0.85, y: canvas.height * 0.70, r: 150, cA: "6,182,212", cB: "59,130,246" },
+      { x: canvas.width * 0.50, y: canvas.height * 0.88, r: 120, cA: "168,85,247", cB: "236,72,153" },
+      { x: canvas.width * 0.30, y: canvas.height * 0.60, r: 100, cA: "14,165,233", cB: "99,102,241" },
+    ];
+
+    type ShootingStar = { x: number; y: number; angle: number; speed: number; length: number; life: number; maxLife: number };
+    const shootingStars: ShootingStar[] = [];
+    let animFrame = 0;
+    let time = 0;
+    let lastTime = performance.now();
+    let spawnTimer = 0;
+    let nextSpawn = 1.5;
+
+    const spawnShootingStar = () => {
+      const sx = Math.random() * canvas.width * 0.65;
+      const sy = Math.random() * canvas.height * 0.35;
+      const angle = Math.PI / 4 + (Math.random() - 0.5) * 0.45;
+      shootingStars.push({ x: sx, y: sy, angle, speed: 550 + Math.random() * 450, length: 70 + Math.random() * 110, life: 0, maxLife: 1.0 + Math.random() * 0.7 });
+    };
+
+    const animate = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      time += 0.01;
+
+      nebulae.forEach(({ x, y, r, cA, cB }) => {
+        const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+        g.addColorStop(0, `rgba(${cA},0.08)`);
+        g.addColorStop(0.5, `rgba(${cB},0.04)`);
+        g.addColorStop(1, `rgba(${cB},0)`);
+        ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2);
+        ctx.fillStyle = g; ctx.fill();
+      });
+
+      stars.forEach((star) => {
+        const tw = Math.sin(time * star.twinkleSpeed * 60 + star.twinklePhase) * 0.28 + 0.72;
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255,255,255,${star.opacity * tw})`;
+        ctx.fill();
+      });
+
+      ctx.strokeStyle = "rgba(147,197,253,0.32)"; ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      cassiopeia.forEach((s, i) => i === 0 ? ctx.moveTo(s.x, s.y) : ctx.lineTo(s.x, s.y));
+      ctx.stroke();
+
+      cassiopeia.forEach((star, idx) => {
+        const pulse = Math.sin(time * 1.8 + idx * 1.1) * 0.18 + 0.82;
+        const g = ctx.createRadialGradient(star.x, star.y, 0, star.x, star.y, 14);
+        g.addColorStop(0, `rgba(147,197,253,${0.85 * pulse})`);
+        g.addColorStop(0.45, `rgba(147,197,253,${0.3 * pulse})`);
+        g.addColorStop(1, "rgba(147,197,253,0)");
+        ctx.beginPath(); ctx.arc(star.x, star.y, 14, 0, Math.PI * 2);
+        ctx.fillStyle = g; ctx.fill();
+        ctx.beginPath(); ctx.arc(star.x, star.y, 2.2 * pulse, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255,255,255,${pulse})`; ctx.fill();
+      });
+
+      const now = performance.now();
+      const dt = Math.min((now - lastTime) / 1000, 0.1);
+      lastTime = now;
+      spawnTimer += dt;
+      if (spawnTimer >= nextSpawn) { spawnShootingStar(); spawnTimer = 0; nextSpawn = 2.5 + Math.random() * 4.5; }
+
+      for (let i = shootingStars.length - 1; i >= 0; i--) {
+        const s = shootingStars[i];
+        s.life += dt;
+        if (s.life >= s.maxLife) { shootingStars.splice(i, 1); continue; }
+        const progress = s.life / s.maxLife;
+        const eased = 1 - (1 - progress) ** 2;
+        const dist = s.speed * s.maxLife * eased;
+        const hx = s.x + Math.cos(s.angle) * dist;
+        const hy = s.y + Math.sin(s.angle) * dist;
+        let alpha = progress < 0.15 ? progress / 0.15 : progress < 0.72 ? 1 : 1 - (progress - 0.72) / 0.28;
+        alpha = Math.max(0, Math.min(1, alpha));
+        const tx = hx - Math.cos(s.angle) * s.length;
+        const ty = hy - Math.sin(s.angle) * s.length;
+        const grad = ctx.createLinearGradient(tx, ty, hx, hy);
+        grad.addColorStop(0, "rgba(147,197,253,0)");
+        grad.addColorStop(0.55, `rgba(186,220,255,${0.45 * alpha})`);
+        grad.addColorStop(1, `rgba(255,255,255,${0.95 * alpha})`);
+        ctx.beginPath(); ctx.moveTo(tx, ty); ctx.lineTo(hx, hy);
+        ctx.strokeStyle = grad; ctx.lineWidth = 1.8; ctx.lineCap = "round"; ctx.stroke();
+        const gr = 5 + (1 - progress) * 5;
+        const gg = ctx.createRadialGradient(hx, hy, 0, hx, hy, gr);
+        gg.addColorStop(0, `rgba(220,240,255,${0.9 * alpha})`);
+        gg.addColorStop(0.4, `rgba(147,197,253,${0.35 * alpha})`);
+        gg.addColorStop(1, "rgba(147,197,253,0)");
+        ctx.beginPath(); ctx.arc(hx, hy, gr, 0, Math.PI * 2); ctx.fillStyle = gg; ctx.fill();
+        ctx.beginPath(); ctx.arc(hx, hy, 1.1, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255,255,255,${alpha})`; ctx.fill();
+      }
+
+      animFrame = requestAnimationFrame(animate);
+    };
+
+    animate();
+    return () => { window.removeEventListener("resize", setCanvasSize); cancelAnimationFrame(animFrame); };
+  }, []);
+
+  return <canvas ref={canvasRef} className={className} />;
 }
 
-interface Service {
-  title: string;
-  icon: React.ComponentType<{ className?: string }>;
-  desc: string;
-  features: string[];
-  gradient: string;
+// ─── Floating orbs ────────────────────────────────────────────────────────────
+function Orbs() {
+  return (
+    <div className="pointer-events-none absolute inset-0 overflow-hidden">
+      <div className="absolute rounded-full blur-3xl" style={{ width: 480, height: 480, left: "-10%", top: "5%", background: "radial-gradient(circle,rgba(99,102,241,0.15) 0%,rgba(139,92,246,0.06) 60%,transparent 100%)", animation: "orbFloat1 18s ease-in-out infinite" }} />
+      <div className="absolute rounded-full blur-3xl" style={{ width: 360, height: 360, right: "-8%", bottom: "18%", background: "radial-gradient(circle,rgba(6,182,212,0.14) 0%,rgba(59,130,246,0.06) 60%,transparent 100%)", animation: "orbFloat2 22s ease-in-out infinite" }} />
+      <div className="absolute rounded-full blur-2xl" style={{ width: 240, height: 240, left: "38%", bottom: "6%", background: "radial-gradient(circle,rgba(168,85,247,0.12) 0%,transparent 70%)", animation: "orbFloat3 14s ease-in-out infinite" }} />
+    </div>
+  );
 }
 
-type PricingCategory = "CHATBOT" | "WEBSITE" | "BACKEND" | "RECOMMENDATION";
+// ─── Social / Link button ─────────────────────────────────────────────────────
+function GalaxyLink({
+  href,
+  label,
+  icon,
+  accent = "indigo",
+}: {
+  href: string;
+  label: string;
+  icon: React.ReactNode;
+  accent?: "indigo" | "cyan" | "purple" | "pink";
+}) {
+  const [hovered, setHovered] = useState(false);
 
-const pricingPlans: Record<PricingCategory, PricingPlan[]> = {
-  CHATBOT: [
-    {
-      name: "Starter Bot",
-      price: "$299",
-      period: "/ month",
-      features: [
-        "Website chatbot setup",
-        "FAQ knowledge base",
-        "Lead capture flows",
-        "Basic analytics",
-        "Responsive UI",
-        "Email support",
-      ],
-      popular: false,
+  const colors: Record<string, { border: [string, string]; bg: [string, string]; text: [string, string]; glow: string }> = {
+    indigo: {
+      border: ["rgba(99,102,241,0.5)", "rgba(99,102,241,0.22)"],
+      bg: ["rgba(99,102,241,0.15)", "rgba(99,102,241,0.07)"],
+      text: ["#c7d2fe", "rgba(199,210,254,0.7)"],
+      glow: "0 0 22px rgba(99,102,241,0.3), 0 4px 16px rgba(0,0,0,0.45)",
     },
-    {
-      name: "Growth Bot",
-      price: "$799",
-      period: "/ month",
-      features: [
-        "Everything in Starter",
-        "Custom tone and prompts",
-        "CRM handoff",
-        "Multistep flows",
-        "Priority support",
-        "Monthly optimization",
-        "Deployment help",
-      ],
-      popular: true,
+    cyan: {
+      border: ["rgba(6,182,212,0.9)", "rgba(6,182,212,0.45)"],
+      bg: ["rgba(6,182,212,0.18)", "rgba(6,182,212,0.08)"],
+      text: ["#e0f9ff", "rgba(224,249,255,0.8)"],
+      glow: "0 0 24px rgba(6,182,212,0.35), 0 4px 16px rgba(0,0,0,0.4)",
     },
-    {
-      name: "Enterprise Bot",
-      price: "Custom",
-      period: "",
-      features: [
-        "Private knowledge sources",
-        "Advanced routing",
-        "Team permissions",
-        "Custom integrations",
-        "Security review",
-        "Load-tested deployment",
-        "Dedicated support",
-      ],
-      popular: false,
+    purple: {
+      border: ["rgba(139,92,246,0.7)", "rgba(139,92,246,0.3)"],
+      bg: ["rgba(139,92,246,0.18)", "rgba(139,92,246,0.07)"],
+      text: ["#ddd6fe", "rgba(221,214,254,0.7)"],
+      glow: "0 0 22px rgba(139,92,246,0.3), 0 4px 16px rgba(0,0,0,0.45)",
     },
-  ],
-  WEBSITE: [
-    {
-      name: "Landing Site",
-      price: "$1,499",
-      period: "one-time",
-      features: [
-        "Custom homepage design",
-        "Mobile-first responsive build",
-        "Fast performance tuning",
-        "Basic SEO setup",
-        "Contact forms",
-        "Launch support",
-      ],
-      popular: false,
+    pink: {
+      border: ["rgba(236,72,153,0.7)", "rgba(236,72,153,0.3)"],
+      bg: ["rgba(236,72,153,0.15)", "rgba(236,72,153,0.06)"],
+      text: ["#fbcfe8", "rgba(251,207,232,0.7)"],
+      glow: "0 0 22px rgba(236,72,153,0.3), 0 4px 16px rgba(0,0,0,0.45)",
     },
-    {
-      name: "Business Site",
-      price: "$3,999",
-      period: "one-time",
-      features: [
-        "Multi-page marketing site",
-        "CMS-ready structure",
-        "Animation and polish",
-        "Analytics integration",
-        "Conversion-focused sections",
-        "Performance review",
-        "Post-launch updates",
-      ],
-      popular: true,
-    },
-    {
-      name: "Enterprise Web",
-      price: "Custom",
-      period: "",
-      features: [
-        "Design system alignment",
-        "Content architecture",
-        "Advanced integrations",
-        "Scalable component library",
-        "Accessibility pass",
-        "Technical SEO review",
-        "Team handoff",
-      ],
-      popular: false,
-    },
-  ],
-  BACKEND: [
-    {
-      name: "API Build",
-      price: "$2,499",
-      period: "per project",
-      features: [
-        "REST or RPC API",
-        "Database modeling",
-        "Auth setup",
-        "Validation and error handling",
-        "Deployment support",
-        "Technical documentation",
-      ],
-      popular: false,
-    },
-    {
-      name: "Full-Stack Engine",
-      price: "$5,999",
-      period: "per project",
-      features: [
-        "Frontend + backend delivery",
-        "Admin dashboard",
-        "Monitoring setup",
-        "Cloud deployment",
-        "CI-ready repo",
-        "Security basics",
-        "Launch checklist",
-      ],
-      popular: true,
-    },
-    {
-      name: "Enterprise Backend",
-      price: "Custom",
-      period: "",
-      features: [
-        "Service architecture",
-        "Queue and job workflows",
-        "Observability",
-        "Scaling strategy",
-        "Third-party integrations",
-        "Infrastructure guidance",
-        "Long-term support",
-      ],
-      popular: false,
-    },
-  ],
-  RECOMMENDATION: [
-    {
-      name: "Starter Recs",
-      price: "$499",
-      period: "/ month",
-      features: [
-        "Simple recommendation logic",
-        "Behavior tracking",
-        "Dashboard summary",
-        "Product feed support",
-        "Weekly reporting",
-      ],
-      popular: false,
-    },
-    {
-      name: "Pro Recs",
-      price: "$1,199",
-      period: "/ month",
-      features: [
-        "Personalized ranking",
-        "A/B test support",
-        "Signal enrichment",
-        "API delivery",
-        "Performance review",
-        "Optimization loops",
-      ],
-      popular: true,
-    },
-    {
-      name: "Enterprise Recs",
-      price: "Custom",
-      period: "",
-      features: [
-        "Custom ML strategy",
-        "Large catalog support",
-        "Segmented experiences",
-        "Analytics warehouse sync",
-        "Infrastructure planning",
-        "Dedicated collaboration",
-      ],
-      popular: false,
-    },
-  ],
-};
+  };
 
-const services: Service[] = [
-  {
-    title: "AI Chatbots",
-    icon: Bot,
-    desc: "Assist visitors, answer questions, and capture leads around the clock.",
-    features: ["Custom knowledge base", "Brand voice alignment", "Lead qualification"],
-    gradient: "from-fuchsia-500 to-sky-500",
-  },
-  {
-    title: "Frontend Websites",
-    icon: Code,
-    desc: "Marketing sites and polished interfaces built for speed and conversion.",
-    features: ["Responsive layouts", "Performance focused", "Modern interactions"],
-    gradient: "from-sky-500 to-cyan-500",
-  },
-  {
-    title: "Backend Systems",
-    icon: Server,
-    desc: "Reliable APIs and infrastructure for products that need to scale cleanly.",
-    features: ["Secure endpoints", "Database design", "Deployment support"],
-    gradient: "from-cyan-500 to-emerald-500",
-  },
-  {
-    title: "Recommendation Engines",
-    icon: Zap,
-    desc: "Turn user behavior into smarter product suggestions and better engagement.",
-    features: ["Behavior-driven logic", "Personalized outputs", "Measurable results"],
-    gradient: "from-violet-500 to-pink-500",
-  },
-];
+  const c = colors[accent];
 
-const pricingCategories: PricingCategory[] = ["CHATBOT", "WEBSITE", "BACKEND", "RECOMMENDATION"];
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        position: "relative",
+        overflow: "hidden",
+        display: "flex",
+        alignItems: "center",
+        gap: 10,
+        padding: "13px 20px",
+        borderRadius: 16,
+        border: `1px solid ${hovered ? c.border[0] : c.border[1]}`,
+        background: hovered ? c.bg[0] : c.bg[1],
+        color: hovered ? c.text[0] : c.text[1],
+        fontFamily: "'Syne', sans-serif",
+        fontSize: 13,
+        fontWeight: 700,
+        letterSpacing: "0.06em",
+        cursor: "pointer",
+        boxShadow: hovered ? c.glow : "0 2px 12px rgba(0,0,0,0.35)",
+        backdropFilter: "blur(12px)",
+        transition: "all 0.25s cubic-bezier(0.22,1,0.36,1)",
+        textDecoration: "none",
+        userSelect: "none",
+      }}
+    >
+      {hovered && (
+        <span style={{
+          position: "absolute", inset: 0,
+          background: "linear-gradient(90deg,transparent,rgba(255,255,255,0.06),transparent)",
+          animation: "shimmer 0.65s ease forwards",
+          pointerEvents: "none",
+        }} />
+      )}
+      <span style={{ display: "flex", alignItems: "center", flexShrink: 0 }}>{icon}</span>
+      <span style={{ position: "relative", zIndex: 1 }}>{label}</span>
+    </a>
+  );
+}
 
+// ─── Stack pill ───────────────────────────────────────────────────────────────
+function StackPill({ label, emoji }: { label: string; emoji: string }) {
+  const [hovered, setHovered] = useState(false);
+  return (
+    <div
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        gap: 7,
+        padding: "8px 14px",
+        borderRadius: 12,
+        border: `1px solid ${hovered ? "rgba(99,102,241,0.4)" : "rgba(99,102,241,0.15)"}`,
+        background: hovered ? "rgba(99,102,241,0.12)" : "rgba(15,23,42,0.6)",
+        backdropFilter: "blur(12px)",
+        transition: "all 0.22s cubic-bezier(0.22,1,0.36,1)",
+        cursor: "default",
+        boxShadow: hovered ? "0 0 16px rgba(99,102,241,0.2)" : "none",
+      }}
+    >
+      <span style={{ fontSize: 14 }}>{emoji}</span>
+      <span style={{ fontFamily: "'Syne',sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: hovered ? "rgba(199,210,254,0.95)" : "rgba(148,163,184,0.7)" }}>
+        {label}
+      </span>
+    </div>
+  );
+}
+
+// ─── Section divider ──────────────────────────────────────────────────────────
+function SectionLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
+      <div style={{ flex: 1, height: 1, background: "rgba(99,102,241,0.2)" }} />
+      <span style={{ fontFamily: "'Syne',sans-serif", fontSize: 9, fontWeight: 800, letterSpacing: "0.28em", textTransform: "uppercase", color: "rgba(148,163,184,0.45)" }}>
+        {children}
+      </span>
+      <div style={{ flex: 1, height: 1, background: "rgba(99,102,241,0.2)" }} />
+    </div>
+  );
+}
+
+// ─── SVG Icons ────────────────────────────────────────────────────────────────
+const InstagramIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+  </svg>
+);
+
+const TikTokIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.3 6.3 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.19 8.19 0 0 0 4.81 1.55V6.8a4.85 4.85 0 0 1-1.04-.11z" />
+  </svg>
+);
+
+const YoutubeIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+  </svg>
+);
+
+const ThesisIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 2L2 7l10 5 10-5-10-5z" />
+    <path d="M2 17l10 5 10-5" />
+    <path d="M2 12l10 5 10-5" />
+  </svg>
+);
+
+// ─── Main Frontpage ───────────────────────────────────────────────────────────
 const Frontpage = () => {
-  const [pricingCategory, setPricingCategory] = useState<PricingCategory>("CHATBOT");
-  const [hoveredService, setHoveredService] = useState<number | null>(null);
+  const [mounted, setMounted] = useState(false);
+  const [photoLoaded, setPhotoLoaded] = useState(false);
 
-  const techStack = [
-    "React",
-    "Next.js",
-    "TypeScript",
-    "FastAPI",
-    "Python",
-    "PostgreSQL",
-    "Docker",
-    "AWS",
-    "OpenAI",
-    "Vercel",
+  useEffect(() => {
+    const t = setTimeout(() => setMounted(true), 80);
+    return () => clearTimeout(t);
+  }, []);
+
+  const ease = "cubic-bezier(0.22,1,0.36,1)";
+
+  const stack = [
+    { label: "Python", emoji: "🐍" },
+    { label: "React", emoji: "⚛️" },
+    { label: "PyTorch", emoji: "🔥" },
+    { label: "LangChain", emoji: "🔗" },
+    { label: "scikit-learn", emoji: "🧠" },
+    { label: "Databases", emoji: "🗄️" },
   ];
 
   return (
-    <main className="min-h-screen bg-white text-slate-900 transition-colors dark:bg-slate-950 dark:text-slate-100">
-      <section className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[radial-gradient(circle_at_top,rgba(14,165,233,0.15),transparent_35%),linear-gradient(180deg,#f8fbff_0%,#eef4ff_42%,#ffffff_100%)] dark:bg-[radial-gradient(circle_at_top,rgba(56,189,248,0.18),transparent_35%),linear-gradient(180deg,#020617_0%,#020617_35%,#000000_100%)]">
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div
-            className="absolute -left-24 top-16 h-[420px] w-[420px] rounded-full bg-sky-400/20 blur-3xl dark:bg-sky-500/15"
-            style={{ animation: "heroFloat 24s ease-in-out infinite" }}
-          />
-          <div
-            className="absolute right-0 top-1/4 h-[460px] w-[460px] rounded-full bg-fuchsia-400/20 blur-3xl dark:bg-violet-500/15"
-            style={{ animation: "heroFloat 24s ease-in-out infinite 8s" }}
-          />
-          <div
-            className="absolute bottom-0 left-1/3 h-[360px] w-[360px] rounded-full bg-cyan-400/20 blur-3xl dark:bg-cyan-500/15"
-            style={{ animation: "heroFloat 24s ease-in-out infinite 15s" }}
-          />
-        </div>
+    <>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap');
+        * { box-sizing: border-box; }
 
-        <CassiopeiaStars />
+        @keyframes orbFloat1 {
+          0%,100% { transform:translate(0,0) scale(1); }
+          33%      { transform:translate(28px,-38px) scale(1.06); }
+          66%      { transform:translate(-18px,18px) scale(0.95); }
+        }
+        @keyframes orbFloat2 {
+          0%,100% { transform:translate(0,0) scale(1); }
+          40%      { transform:translate(-32px,22px) scale(1.08); }
+          70%      { transform:translate(14px,-14px) scale(0.97); }
+        }
+        @keyframes orbFloat3 {
+          0%,100% { transform:translate(0,0); }
+          50%      { transform:translate(-18px,-28px); }
+        }
+        @keyframes shimmer {
+          0%   { transform:translateX(-100%); }
+          100% { transform:translateX(100%); }
+        }
+        @keyframes spinSlow {
+          from { transform:rotate(0deg); }
+          to   { transform:rotate(360deg); }
+        }
+        @keyframes pulseRing {
+          0%,100% { transform:scale(0.95); opacity:0.6; }
+          50%      { transform:scale(1.05); opacity:0.2; }
+        }
+        @keyframes glowPulse {
+          0%,100% { opacity:0.5; }
+          50%      { opacity:0.75; }
+        }
+        @keyframes photoReveal {
+          from { opacity:0; transform:scale(0.93) translateY(12px); }
+          to   { opacity:1; transform:scale(1) translateY(0); }
+        }
+        @keyframes badgeFloat {
+          0%,100% { transform:translateY(0px) rotate(-2deg); }
+          50%      { transform:translateY(-6px) rotate(-2deg); }
+        }
 
-        <div className="relative z-10 mx-auto flex max-w-6xl flex-col items-center px-6 pb-20 pt-36 text-center sm:pt-32">
-          <div className="mb-8 inline-block opacity-0 animate-fadeIn">
-            <span className="rounded-full border border-sky-500/20 bg-white/60 px-4 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-slate-600 backdrop-blur-sm dark:border-white/10 dark:bg-white/5 dark:text-slate-300">
-              Digital products with real momentum
-            </span>
-          </div>
+        .logo-spin  { animation:spinSlow 20s linear infinite; }
+        .logo-pulse { animation:pulseRing 3s ease-in-out infinite; }
+        .glow-pulse { animation:glowPulse 6s ease-in-out infinite; }
+        .badge-float { animation:badgeFloat 4s ease-in-out infinite; }
+      `}</style>
 
-          <h1
-            className="max-w-5xl text-5xl font-light leading-tight tracking-tight opacity-0 animate-fadeIn md:text-6xl lg:text-7xl"
-            style={{ animationDelay: "0.2s" }}
-          >
-            Websites and AI systems
-            <br />
-            <span className="bg-gradient-to-r from-fuchsia-600 via-sky-600 to-cyan-600 bg-clip-text font-medium text-transparent dark:from-fuchsia-400 dark:via-sky-400 dark:to-cyan-300">
-              built around the Cassiopeia spark
-            </span>
-          </h1>
+      <main style={{ fontFamily: "'DM Sans',sans-serif", minHeight: "100vh", position: "relative", overflow: "hidden", background: "#020817" }}>
 
-          <p
-            className="mt-6 max-w-2xl text-lg leading-relaxed text-slate-600 opacity-0 animate-fadeIn dark:text-slate-300"
-            style={{ animationDelay: "0.4s" }}
-          >
-            Launch a polished front page, chatbot experience, or backend foundation that
-            feels intentional from day one and is ready to grow with your business.
-          </p>
+        {/* ── Star canvas ─────────────────────────────────────────────────── */}
+        <CassiopeiaStars className="absolute inset-0 h-full w-full" />
 
-          <div
-            className="mt-10 flex flex-col gap-5 opacity-0 animate-fadeIn sm:flex-row"
-            style={{ animationDelay: "0.6s" }}
-          >
-            <a
-              href="#services"
-              className="group inline-flex items-center justify-center rounded-full bg-slate-950 px-8 py-4 font-medium text-white shadow-lg shadow-sky-500/20 transition hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-100"
-            >
-              Explore services
-              <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
-            </a>
-            <a
-              href="#contact"
-              className="inline-flex items-center justify-center rounded-full border border-slate-300 bg-white/60 px-8 py-4 font-medium text-slate-900 backdrop-blur-sm transition hover:border-slate-400 hover:bg-white dark:border-white/15 dark:bg-white/5 dark:text-white dark:hover:border-white/30 dark:hover:bg-white/10"
-            >
-              Start a project
-            </a>
-          </div>
+        {/* ── Colour orbs ─────────────────────────────────────────────────── */}
+        <Orbs />
 
-          <div
-            className="mt-16 flex flex-wrap justify-center gap-3 opacity-0 animate-fadeIn"
-            style={{ animationDelay: "0.8s" }}
-          >
-            {techStack.map((tech) => (
-              <span
-                key={tech}
-                className="rounded-full border border-slate-300/70 bg-white/75 px-4 py-2 text-sm text-slate-600 backdrop-blur-sm dark:border-white/10 dark:bg-white/5 dark:text-slate-300"
-              >
-                {tech}
-              </span>
-            ))}
-          </div>
-        </div>
-
+        {/* ── Blueprint grid ──────────────────────────────────────────────── */}
         <div
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 opacity-0 animate-fadeIn"
-          style={{ animationDelay: "1s" }}
-        >
-          <div className="h-16 w-px bg-gradient-to-b from-slate-400 to-transparent dark:from-slate-500" />
-        </div>
-      </section>
+          className="pointer-events-none absolute inset-0"
+          style={{
+            backgroundImage: "linear-gradient(rgba(99,102,241,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(99,102,241,0.04) 1px,transparent 1px)",
+            backgroundSize: "60px 60px",
+          }}
+        />
 
-      <section id="services" className="border-t border-slate-200 px-6 py-28 dark:border-slate-800">
-        <div className="mx-auto max-w-7xl">
-          <div className="mb-16">
-            <p className="mb-5 text-sm font-semibold uppercase tracking-[0.3em] text-slate-500 dark:text-slate-500">
-              Services
-            </p>
-            <h2 className="max-w-3xl text-4xl font-light tracking-tight md:text-5xl">
-              A sharp front page is stronger when the product behind it is just as solid.
-            </h2>
-          </div>
+        {/* ── Bottom vignette ─────────────────────────────────────────────── */}
+        <div
+          className="pointer-events-none absolute inset-0"
+          style={{ background: "linear-gradient(to top,rgba(2,8,23,0.92) 0%,rgba(2,8,23,0.5) 35%,transparent 65%)" }}
+        />
 
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-            {services.map((service, idx) => {
-              const Icon = service.icon;
-              const isHovered = hoveredService === idx;
+        {/* ── Breathing center glow ───────────────────────────────────────── */}
+        <div
+          className="glow-pulse pointer-events-none absolute inset-0"
+          style={{ background: "radial-gradient(ellipse 65% 50% at 50% 40%,rgba(99,102,241,0.1),transparent 70%)" }}
+        />
 
-              return (
-                <div
-                  key={service.title}
-                  className="group relative rounded-3xl border border-slate-200 bg-white p-8 transition-all duration-500 hover:-translate-y-1 hover:border-slate-300 hover:shadow-xl dark:border-slate-800 dark:bg-slate-900 dark:hover:border-slate-700"
-                  onMouseEnter={() => setHoveredService(idx)}
-                  onMouseLeave={() => setHoveredService(null)}
-                >
-                  <div
-                    className={`absolute inset-0 rounded-3xl bg-gradient-to-br ${service.gradient} opacity-0 transition-opacity duration-500 group-hover:opacity-8`}
-                  />
+        {/* ── Page layout ─────────────────────────────────────────────────── */}
+        <div style={{ position: "relative", zIndex: 10, display: "flex", flexDirection: "column", minHeight: "100vh", padding: "60px 64px 60px" }}>
 
-                  <div className="relative z-10">
-                    <div
-                      className={`mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br ${service.gradient} shadow-lg transition-transform duration-500 ${
-                        isHovered ? "scale-110 rotate-3" : ""
-                      }`}
-                    >
-                      <Icon className="h-7 w-7 text-white" />
-                      {isHovered ? (
-                        <Sparkles className="absolute -right-1 -top-1 h-3.5 w-3.5 animate-ping text-white" />
-                      ) : null}
+
+
+          {/* ── Hero: two-column layout ──────────────────────────────────────── */}
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1.1fr",
+            gap: 80,
+            alignItems: "center",
+            flex: 1,
+            width: "100%",
+            opacity: mounted ? 1 : 0,
+            transform: mounted ? "translateY(0)" : "translateY(20px)",
+            transition: `opacity 1.2s 0.2s ${ease}, transform 1.2s 0.2s ${ease}`,
+          }}>
+
+            {/* ── LEFT: Photo ─────────────────────────────────────────────── */}
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 24 }}>
+
+              {/* Photo frame */}
+              <div style={{ position: "relative" }}>
+                {/* Outer glow ring */}
+                <div style={{
+                  position: "absolute", inset: -3,
+                  borderRadius: "50%",
+                  background: "linear-gradient(135deg,rgba(6,182,212,0.5),rgba(99,102,241,0.5),rgba(139,92,246,0.5))",
+                  filter: "blur(6px)",
+                  animation: "glowPulse 4s ease-in-out infinite",
+                }} />
+                {/* Spinning dashed orbit */}
+                <div className="logo-spin" style={{ position: "absolute", inset: -14, borderRadius: "50%", border: "1px dashed rgba(99,102,241,0.3)" }} />
+                <div style={{
+                  position: "absolute", inset: -20,
+                  borderRadius: "50%",
+                  border: "1px solid rgba(6,182,212,0.15)",
+                  animation: "pulseRing 6s ease-in-out infinite",
+                }} />
+
+                {/* Photo container */}
+                <div style={{
+                  width: 220, height: 220,
+                  borderRadius: "50%",
+                  overflow: "hidden",
+                  border: "2px solid rgba(6,182,212,0.4)",
+                  background: "linear-gradient(135deg,rgba(15,23,42,0.9),rgba(30,41,59,0.9))",
+                  position: "relative",
+                  boxShadow: "0 0 40px rgba(99,102,241,0.2), 0 20px 60px rgba(2,6,23,0.8)",
+                }}>
+                  {/* Placeholder silhouette while photo loads */}
+                  {!photoLoaded && (
+                    <div style={{
+                      position: "absolute", inset: 0,
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      flexDirection: "column", gap: 8,
+                    }}>
+                      <svg width="64" height="64" viewBox="0 0 24 24" fill="none">
+                        <circle cx="12" cy="8" r="4" stroke="rgba(99,102,241,0.5)" strokeWidth="1.5" />
+                        <path d="M4 20a8 8 0 0 1 16 0" stroke="rgba(99,102,241,0.5)" strokeWidth="1.5" strokeLinecap="round" />
+                      </svg>
+                      <span style={{ fontSize: 9, color: "rgba(99,102,241,0.5)", fontFamily: "'Syne',sans-serif", letterSpacing: "0.15em", textTransform: "uppercase" }}>Your photo here</span>
                     </div>
-
-                    <h3 className="mb-3 text-2xl font-light tracking-tight">{service.title}</h3>
-                    <p className="mb-5 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
-                      {service.desc}
-                    </p>
-                    <ul className="space-y-2.5">
-                      {service.features.map((feature) => (
-                        <li key={feature} className="flex items-start">
-                          <CheckCircle className="mr-2 mt-0.5 h-4 w-4 flex-shrink-0 text-sky-500 dark:text-sky-400" />
-                          <span className="text-sm text-slate-600 dark:text-slate-400">
-                            {feature}
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      <section
-        id="pricing"
-        className="border-t border-slate-200 bg-slate-50 px-6 py-28 dark:border-slate-800 dark:bg-slate-900/40"
-      >
-        <div className="mx-auto max-w-7xl">
-          <div className="mb-12">
-            <p className="mb-5 text-sm font-semibold uppercase tracking-[0.3em] text-slate-500 dark:text-slate-500">
-              Pricing
-            </p>
-            <h2 className="text-4xl font-light tracking-tight md:text-5xl">
-              Flexible packages for launches, upgrades, and bigger product bets.
-            </h2>
-            <p className="mt-4 max-w-2xl text-base text-slate-600 dark:text-slate-400">
-              Pick the category closest to your goal and use it as a starting point for scope.
-            </p>
-          </div>
-
-          <div className="mb-16 flex flex-wrap gap-3">
-            {pricingCategories.map((category) => (
-              <button
-                key={category}
-                onClick={() => setPricingCategory(category)}
-                className={`rounded-full px-6 py-3 text-sm font-semibold tracking-[0.15em] uppercase transition-all duration-300 ${
-                  pricingCategory === category
-                    ? "bg-slate-950 text-white shadow-lg dark:bg-white dark:text-slate-950"
-                    : "border border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:text-slate-900 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-400 dark:hover:border-slate-500 dark:hover:text-white"
-                }`}
-              >
-                {category}
-              </button>
-            ))}
-          </div>
-
-          <div className="grid gap-8 md:grid-cols-3">
-            {pricingPlans[pricingCategory].map((plan) => (
-              <div
-                key={plan.name}
-                className={`relative rounded-3xl p-8 transition-all duration-300 ${
-                  plan.popular
-                    ? "scale-[1.02] bg-slate-950 text-white shadow-2xl shadow-slate-950/10 dark:bg-slate-800"
-                    : "border border-slate-200 bg-white text-slate-900 hover:shadow-lg dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
-                }`}
-              >
-                {plan.popular ? (
-                  <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                    <span className="rounded-full bg-gradient-to-r from-fuchsia-600 via-sky-600 to-cyan-600 px-5 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-white shadow-lg">
-                      Most popular
-                    </span>
-                  </div>
-                ) : null}
-
-                <h3 className="mb-2 text-2xl font-light tracking-tight">{plan.name}</h3>
-
-                <div className="mb-8">
-                  <span className="text-4xl font-extralight">{plan.price}</span>
-                  {plan.period ? (
-                    <span
-                      className={`ml-1 text-lg ${
-                        plan.popular ? "text-slate-300" : "text-slate-500 dark:text-slate-400"
-                      }`}
-                    >
-                      {plan.period}
-                    </span>
-                  ) : null}
+                  )}
+                  <img
+                    src="/your-photo.jpg"
+                    alt="Milos Saric"
+                    onLoad={() => setPhotoLoaded(true)}
+                    style={{
+                      width: "100%", height: "100%",
+                      objectFit: "cover",
+                      opacity: photoLoaded ? 1 : 0,
+                      transition: "opacity 0.6s ease",
+                      animation: photoLoaded ? "photoReveal 0.8s ease forwards" : "none",
+                    }}
+                  />
                 </div>
 
-                <div className="mb-10 space-y-4">
-                  {plan.features.map((feature) => (
-                    <div key={feature} className="flex items-start gap-4">
-                      <div
-                        className={`mt-3 h-1 w-1 flex-shrink-0 rounded-full ${
-                          plan.popular ? "bg-cyan-400" : "bg-sky-500"
-                        }`}
-                      />
-                      <span className={plan.popular ? "text-slate-300" : "text-slate-700 dark:text-slate-300"}>
-                        {feature}
+                {/* Floating "PhD energy" badge */}
+                <div
+                  className="badge-float"
+                  style={{
+                    position: "absolute",
+                    bottom: -8,
+                    right: -16,
+                    padding: "6px 12px",
+                    borderRadius: 20,
+                    background: "rgba(15,23,42,0.95)",
+                    border: "1px solid rgba(6,182,212,0.45)",
+                    backdropFilter: "blur(12px)",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 6,
+                    boxShadow: "0 0 20px rgba(6,182,212,0.2)",
+                  }}
+                >
+                  <span style={{ fontSize: 14 }}>🎓</span>
+                  <span style={{ fontFamily: "'Syne',sans-serif", fontSize: 9, fontWeight: 800, letterSpacing: "0.15em", textTransform: "uppercase", color: "rgba(6,182,212,0.9)" }}>MSc Thesis</span>
+                </div>
+              </div>
+
+              {/* ── Socials ────────────────────────────────────────────────── */}
+              <div style={{ display: "flex", flexDirection: "column", gap: 10, width: "100%", maxWidth: 260 }}>
+                <SectionLabel>Find me online</SectionLabel>
+
+                <GalaxyLink
+                  href="https://instagram.com/sariccmilos"
+                  label="Instagram"
+                  accent="pink"
+                  icon={<InstagramIcon />}
+                />
+                <GalaxyLink
+                  href="https://tiktok.com/@sariccmilos"
+                  label="TikTok"
+                  accent="purple"
+                  icon={<TikTokIcon />}
+                />
+                <GalaxyLink
+                  href="https://youtube.com/@saricmilos"
+                  label="YouTube"
+                  accent="indigo"
+                  icon={<YoutubeIcon />}
+                />
+
+                {/* Thesis link — with extra personality */}
+                <a
+                  href="https://upcommons.upc.edu/server/api/core/bitstreams/67a5f746-ba7f-4f95-a278-d27986893298/content"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    position: "relative",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 4,
+                    padding: "12px 16px",
+                    borderRadius: 16,
+                    border: "1px solid rgba(6,182,212,0.35)",
+                    background: "rgba(6,182,212,0.07)",
+                    backdropFilter: "blur(12px)",
+                    transition: "all 0.25s cubic-bezier(0.22,1,0.36,1)",
+                    textDecoration: "none",
+                  }}
+                >
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <ThesisIcon />
+                    <span style={{ fontFamily: "'Syne',sans-serif", fontSize: 12, fontWeight: 800, letterSpacing: "0.08em", color: "rgba(6,182,212,0.9)", textTransform: "uppercase" }}>
+                      Master's Thesis
+                    </span>
+                  </div>
+                  <span style={{ fontSize: 10, color: "rgba(148,163,184,0.55)", lineHeight: 1.4, paddingLeft: 24 }}>
+                    Proof that I once suffered for science 📄✨
+                  </span>
+                </a>
+
+                {/* Divider */}
+                <div style={{ height: 1, background: "rgba(51,65,85,0.5)", margin: "4px 0" }} />
+
+                {/* Cassiopeia AI — serious business link */}
+                <a
+                  href="https://cassiopeiai.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    position: "relative",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 4,
+                    padding: "12px 16px",
+                    borderRadius: 16,
+                    border: "1px solid rgba(6,182,212,0.5)",
+                    background: "linear-gradient(135deg,rgba(6,182,212,0.12),rgba(99,102,241,0.08))",
+                    backdropFilter: "blur(12px)",
+                    transition: "all 0.25s cubic-bezier(0.22,1,0.36,1)",
+                    textDecoration: "none",
+                    boxShadow: "0 0 20px rgba(6,182,212,0.1)",
+                  }}
+                >
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <span style={{ fontSize: 15 }}>🚀</span>
+                      <span style={{ fontFamily: "'Syne',sans-serif", fontSize: 12, fontWeight: 800, letterSpacing: "0.08em", color: "rgba(6,182,212,0.95)", textTransform: "uppercase" }}>
+                        Cassiopeia AI
                       </span>
                     </div>
+                    <span style={{ fontSize: 8, fontFamily: "'Syne',sans-serif", fontWeight: 800, letterSpacing: "0.18em", textTransform: "uppercase", padding: "2px 7px", borderRadius: 6, background: "rgba(6,182,212,0.15)", border: "1px solid rgba(6,182,212,0.3)", color: "rgba(6,182,212,0.8)" }}>
+                      Business
+                    </span>
+                  </div>
+                  <span style={{ fontSize: 10, color: "rgba(148,163,184,0.55)", lineHeight: 1.4, paddingLeft: 23 }}>
+                    Where I pretend to be professional 💼✨
+                  </span>
+                </a>
+
+                {/* Personal site — the real one */}
+                <a
+                  href="https://milos-saric.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    position: "relative",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 4,
+                    padding: "12px 16px",
+                    borderRadius: 16,
+                    border: "1px solid rgba(139,92,246,0.4)",
+                    background: "rgba(139,92,246,0.07)",
+                    backdropFilter: "blur(12px)",
+                    transition: "all 0.25s cubic-bezier(0.22,1,0.36,1)",
+                    textDecoration: "none",
+                  }}
+                >
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <span style={{ fontSize: 15 }}>🕵️</span>
+                      <span style={{ fontFamily: "'Syne',sans-serif", fontSize: 12, fontWeight: 800, letterSpacing: "0.08em", color: "rgba(167,139,250,0.95)", textTransform: "uppercase" }}>
+                        milos-saric.com
+                      </span>
+                    </div>
+                    <span style={{ fontSize: 8, fontFamily: "'Syne',sans-serif", fontWeight: 800, letterSpacing: "0.18em", textTransform: "uppercase", padding: "2px 7px", borderRadius: 6, background: "rgba(139,92,246,0.15)", border: "1px solid rgba(139,92,246,0.3)", color: "rgba(167,139,250,0.8)" }}>
+                      Private
+                    </span>
+                  </div>
+                  <span style={{ fontSize: 10, color: "rgba(148,163,184,0.55)", lineHeight: 1.4, paddingLeft: 23 }}>
+                    The unfiltered version. Enter at own risk 👀
+                  </span>
+                </a>
+              </div>
+            </div>
+
+            {/* ── RIGHT: Info ──────────────────────────────────────────────── */}
+            <div style={{ display: "flex", flexDirection: "column", gap: 32 }}>
+
+              {/* Title block */}
+              <div>
+                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
+                  <div style={{ height: 1, width: 32, background: "linear-gradient(90deg,transparent,rgba(6,182,212,0.7))" }} />
+                  <span style={{ fontFamily: "'Syne',sans-serif", fontSize: 9, fontWeight: 800, letterSpacing: "0.28em", textTransform: "uppercase", color: "rgba(6,182,212,0.7)" }}>
+                    Available for hire • Probably caffeinated
+                  </span>
+                </div>
+
+                <h1 style={{
+                  fontFamily: "'Syne',sans-serif",
+                  fontSize: "clamp(32px,4.5vw,54px)",
+                  fontWeight: 800,
+                  letterSpacing: "-0.03em",
+                  color: "#f1f5f9",
+                  lineHeight: 1.05,
+                  marginBottom: 10,
+                }}>
+                  Milos Saric
+                </h1>
+
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 16 }}>
+                  {["ML / AI Engineer", "Data Scientist"].map((role) => (
+                    <span key={role} style={{
+                      fontFamily: "'Syne',sans-serif",
+                      fontSize: 13,
+                      fontWeight: 700,
+                      letterSpacing: "0.06em",
+                      padding: "5px 14px",
+                      borderRadius: 20,
+                      background: "rgba(99,102,241,0.12)",
+                      border: "1px solid rgba(99,102,241,0.3)",
+                      color: "rgba(199,210,254,0.9)",
+                    }}>
+                      {role}
+                    </span>
                   ))}
                 </div>
 
-                <a
-                  href="#contact"
-                  className={`inline-flex w-full items-center justify-center rounded-full py-3 font-medium transition-all duration-300 ${
-                    plan.popular
-                      ? "bg-white text-slate-950 hover:bg-slate-100"
-                      : "bg-slate-950 text-white hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-100"
-                  }`}
-                >
-                  {plan.price === "Custom" ? "Talk about scope" : "Get started"}
-                </a>
+                <p style={{ fontSize: 15, color: "rgba(148,163,184,0.65)", lineHeight: 1.7, maxWidth: 440 }}>
+                  I teach machines to think, occasionally wonder if they&apos;re judging me back, and ship things that actually work — not just in notebooks.
+                </p>
+              </div>
+
+              {/* ── Stack ──────────────────────────────────────────────────── */}
+              <div style={{
+                padding: "24px 28px",
+                borderRadius: 24,
+                background: "linear-gradient(135deg,rgba(15,23,42,0.82) 0%,rgba(15,23,42,0.72) 100%)",
+                backdropFilter: "blur(24px) saturate(1.4)",
+                border: "1px solid rgba(99,102,241,0.18)",
+                boxShadow: "0 0 0 1px rgba(255,255,255,0.04) inset, 0 30px 80px rgba(2,6,23,0.7), 0 0 60px rgba(99,102,241,0.08)",
+              }}>
+                <SectionLabel>Tech Stack</SectionLabel>
+
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                  {stack.map((item) => (
+                    <StackPill key={item.label} label={item.label} emoji={item.emoji} />
+                  ))}
+                </div>
+
+                {/* Fun footnote */}
+                <p style={{ marginTop: 16, fontSize: 11, color: "rgba(100,116,139,0.55)", fontStyle: "italic", lineHeight: 1.5 }}>
+                  * No models were harmed in the making of this portfolio. A few GPUs might have been.
+                </p>
+              </div>
+
+              {/* ── Quick facts ────────────────────────────────────────────── */}
+              <div style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: 12,
+              }}>
+                {[
+                  { label: "Models shipped", value: "∞", sub: "give or take" },
+                  { label: "Bugs fixed", value: "most", sub: "of them" },
+                  { label: "Papers read", value: "too many", sub: "send help" },
+                  { label: "Coffee / model", value: "1:1", sub: "ratio maintained" },
+                ].map((fact) => (
+                  <div
+                    key={fact.label}
+                    style={{
+                      padding: "16px 18px",
+                      borderRadius: 18,
+                      background: "rgba(15,23,42,0.6)",
+                      border: "1px solid rgba(51,65,85,0.5)",
+                      backdropFilter: "blur(12px)",
+                    }}
+                  >
+                    <div style={{ fontFamily: "'Syne',sans-serif", fontSize: 20, fontWeight: 800, color: "#f1f5f9", lineHeight: 1 }}>{fact.value}</div>
+                    <div style={{ fontSize: 11, color: "rgba(148,163,184,0.5)", marginTop: 3 }}>{fact.label}</div>
+                    <div style={{ fontSize: 10, color: "rgba(99,102,241,0.6)", marginTop: 2, fontStyle: "italic" }}>{fact.sub}</div>
+                  </div>
+                ))}
+              </div>
+
+            </div>
+          </div>
+
+          {/* ── Footer ──────────────────────────────────────────────────────── */}
+          <div style={{
+            marginTop: 60,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 12,
+            opacity: mounted ? 1 : 0,
+            transition: `opacity 1.4s 0.8s ${ease}`,
+          }}>
+            <div style={{ flex: 1, height: 1, background: "rgba(51,65,85,0.5)" }} />
+            {["Python > pseudocode", "ML > magic", "Sleep < deadlines"].map((label) => (
+              <div key={label} style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                <div style={{ width: 5, height: 5, borderRadius: "50%", background: "rgba(6,182,212,0.7)" }} />
+                <span style={{ fontSize: 10, color: "rgba(100,116,139,0.8)", fontWeight: 500 }}>{label}</span>
               </div>
             ))}
+            <div style={{ flex: 1, height: 1, background: "rgba(51,65,85,0.5)" }} />
           </div>
         </div>
-      </section>
 
-      <section id="contact" className="border-t border-slate-200 px-6 py-28 dark:border-slate-800">
-        <div className="mx-auto max-w-4xl text-center">
-          <h2 className="text-4xl font-light tracking-tight md:text-5xl">
-            Ready to turn the first impression into a full product story?
-          </h2>
-          <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-slate-600 dark:text-slate-400">
-            Whether you need a front page, an AI assistant, or the backend behind it,
-            let&apos;s shape something clean, fast, and memorable.
-          </p>
-          <div className="mt-10">
-            <a
-              href="mailto:contact@cassiopeiai.com"
-              className="group inline-flex items-center rounded-full bg-slate-950 px-8 py-4 font-medium text-white transition hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-100"
-            >
-              contact@cassiopeiai.com
-              <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
-            </a>
-          </div>
-        </div>
-      </section>
-
-      <style jsx>{`
-        @keyframes heroFloat {
-          0%,
-          100% {
-            transform: translate(0, 0) scale(1);
-          }
-          33% {
-            transform: translate(50px, -50px) scale(1.08);
-          }
-          66% {
-            transform: translate(-40px, 30px) scale(0.92);
-          }
-        }
-
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-            transform: translateY(18px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        .animate-fadeIn {
-          animation: fadeIn 0.9s ease-out forwards;
-        }
-      `}</style>
-    </main>
+      </main>
+    </>
   );
 };
 

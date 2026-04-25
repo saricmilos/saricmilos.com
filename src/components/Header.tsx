@@ -1,34 +1,23 @@
 "use client";
 
-import { Menu, Moon, Sparkles, Sun, X } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { Moon, Sun } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
 
-const navLinks = [
-  { name: "Services", href: "#services" },
-  { name: "Pricing", href: "#pricing" },
-  { name: "Contact", href: "#contact" },
-];
+interface ModernHeaderProps {
+  toggleTheme: () => void;
+  theme: string;
+}
 
-const Header = () => {
-  const [mobileOpen, setMobileOpen] = useState(false);
+const ModernHeader: React.FC<ModernHeaderProps> = ({ toggleTheme, theme }) => {
   const [scrolled, setScrolled] = useState(false);
-  const [theme, setTheme] = useState<"light" | "dark">(() => {
-    if (typeof window === "undefined") {
-      return "dark";
-    }
-
-    const storedTheme = window.localStorage.getItem("theme");
-    if (storedTheme === "light" || storedTheme === "dark") {
-      return storedTheme;
-    }
-
-    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-  });
+  const [visible, setVisible] = useState(false);
+  const isDark = theme === "dark";
 
   useEffect(() => {
-    document.documentElement.classList.toggle("dark", theme === "dark");
-  }, [theme]);
+    const t = setTimeout(() => setVisible(true), 80);
+    return () => clearTimeout(t);
+  }, []);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -37,96 +26,182 @@ const Header = () => {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  useEffect(() => {
-    document.body.style.overflow = mobileOpen ? "hidden" : "";
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [mobileOpen]);
-
-  const toggleTheme = () => {
-    const nextTheme = theme === "dark" ? "light" : "dark";
-    document.documentElement.classList.toggle("dark", nextTheme === "dark");
-    window.localStorage.setItem("theme", nextTheme);
-    setTheme(nextTheme);
-  };
-
   return (
-    <header className="fixed inset-x-0 top-0 z-50 px-4 py-4 md:px-6">
+    <header
+      className="fixed inset-x-0 top-0 z-[1000] px-4 py-3 md:px-8"
+      style={{
+        opacity: visible ? 1 : 0,
+        transform: visible ? "translateY(0)" : "translateY(-10px)",
+        transition: "opacity 0.8s cubic-bezier(0.22,1,0.36,1), transform 0.8s cubic-bezier(0.22,1,0.36,1)",
+      }}
+    >
       <div
-        className={`mx-auto flex w-full max-w-7xl items-center justify-between rounded-[1.75rem] border transition-all duration-300 ${
+        className={`mx-auto flex w-full items-center justify-between rounded-2xl border transition-all duration-500 ${
           scrolled
-            ? "border-white/20 bg-slate-950/80 px-4 py-2.5 shadow-[0_18px_50px_rgba(15,23,42,0.4)] backdrop-blur-xl"
-            : "border-white/10 bg-slate-950/55 px-4 py-3 backdrop-blur-md"
+            ? "border-slate-200/60 bg-white/80 px-5 py-3 shadow-[0_8px_32px_rgba(8,16,30,0.1)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/75 dark:shadow-[0_8px_32px_rgba(0,0,0,0.4)]"
+            : "border-slate-200/40 bg-white/50 px-5 py-3.5 backdrop-blur-md dark:border-white/8 dark:bg-slate-950/30"
         }`}
       >
-        <Link href="/" className="flex items-center gap-3 rounded-2xl px-1 py-1">
-          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-400 via-sky-500 to-indigo-600 text-slate-950 shadow-lg shadow-cyan-500/30">
-            <Sparkles className="h-5 w-5" />
+        {/* ── Logo ─────────────────────────────────────────────────────── */}
+        <Link
+          href="/"
+          className="flex items-center gap-3 rounded-xl transition-transform duration-200 hover:scale-[1.02]"
+        >
+          {/* Constellation mark */}
+          <div className="relative flex-shrink-0">
+            <div
+              className="absolute inset-0 rounded-full"
+              style={{
+                background: isDark
+                  ? "radial-gradient(circle, rgba(6,182,212,0.25) 0%, transparent 70%)"
+                  : "radial-gradient(circle, rgba(99,102,241,0.18) 0%, transparent 70%)",
+                animation: "logoPulse 3s ease-in-out infinite",
+              }}
+            />
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+              {/* Cassiopeia W shape */}
+              <polyline
+                points="4,22 8,10 13,20 18,10 23,20 28,10"
+                stroke={isDark ? "rgba(6,182,212,0.9)" : "rgba(99,102,241,0.85)"}
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              {/* Dots on stars */}
+              {[
+                [4, 22], [8, 10], [13, 20], [18, 10], [23, 20], [28, 10],
+              ].map(([cx, cy], i) => (
+                <circle
+                  key={i}
+                  cx={cx}
+                  cy={cy}
+                  r="1.8"
+                  fill={isDark ? "rgba(6,182,212,0.95)" : "rgba(99,102,241,0.9)"}
+                />
+              ))}
+            </svg>
           </div>
-          <div className="leading-none">
-            <p className="text-sm font-medium uppercase tracking-[0.28em] text-cyan-200/80">
-              Cassiopeia
-            </p>
-            <p className="text-lg font-semibold text-white">AI Front Page</p>
+
+          {/* Wordmark */}
+          <div>
+            <span
+              style={{
+                fontFamily: "'Syne', sans-serif",
+                fontSize: 16,
+                fontWeight: 800,
+                letterSpacing: "-0.02em",
+                lineHeight: 1,
+                background: isDark
+                  ? "linear-gradient(135deg, #e2e8f0 0%, rgba(6,182,212,0.9) 100%)"
+                  : "linear-gradient(135deg, #0f172a 0%, rgba(99,102,241,0.9) 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+              }}
+            >
+              Cassiopeia AI
+            </span>
           </div>
         </Link>
 
-        <nav className="hidden items-center gap-2 md:flex">
-          {navLinks.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              className="rounded-full px-4 py-2 text-sm font-medium text-slate-200 transition hover:bg-white/10 hover:text-white"
+        {/* ── Quote ────────────────────────────────────────────────────── */}
+        <div className="hidden flex-1 items-center justify-center px-8 md:flex">
+          <p
+            style={{
+              fontFamily: "'DM Sans', sans-serif",
+              fontSize: 13,
+              fontWeight: 400,
+              fontStyle: "italic",
+              letterSpacing: "0.01em",
+              lineHeight: 1.5,
+              textAlign: "center",
+              maxWidth: 480,
+            }}
+            className="text-slate-500 dark:text-slate-400"
+          >
+            <span
+              style={{
+                color: isDark ? "rgba(6,182,212,0.7)" : "rgba(99,102,241,0.7)",
+                marginRight: 6,
+                fontSize: 16,
+                fontStyle: "normal",
+              }}
             >
-              {link.name}
-            </a>
-          ))}
-        </nav>
-
-        <div className="flex items-center gap-2">
-          <button
-            onClick={toggleTheme}
-            aria-label="Toggle theme"
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/15 text-slate-100 transition hover:border-white/25 hover:bg-white/10"
-          >
-            {theme === "dark" ? (
-              <Sun className="h-4.5 w-4.5 text-amber-300" />
-            ) : (
-              <Moon className="h-4.5 w-4.5" />
-            )}
-          </button>
-
-          <button
-            onClick={() => setMobileOpen((prev) => !prev)}
-            aria-label="Toggle menu"
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/15 text-slate-100 transition hover:border-white/25 hover:bg-white/10 md:hidden"
-          >
-            {mobileOpen ? <X className="h-4.5 w-4.5" /> : <Menu className="h-4.5 w-4.5" />}
-          </button>
+              "
+            </span>
+            My next chapter is already prepared and I am ready to step into it
+            <span
+              style={{
+                color: isDark ? "rgba(6,182,212,0.7)" : "rgba(99,102,241,0.7)",
+                marginLeft: 6,
+                fontSize: 16,
+                fontStyle: "normal",
+              }}
+            >
+              "
+            </span>
+          </p>
         </div>
+
+        {/* ── Theme toggle ─────────────────────────────────────────────── */}
+        <button
+          onClick={toggleTheme}
+          aria-label="Toggle theme"
+          style={{
+            width: 38,
+            height: 38,
+            borderRadius: "50%",
+            border: isDark ? "1px solid rgba(255,255,255,0.12)" : "1px solid rgba(15,23,42,0.15)",
+            background: isDark ? "rgba(255,255,255,0.05)" : "rgba(15,23,42,0.04)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            cursor: "pointer",
+            transition: "all 0.25s cubic-bezier(0.22,1,0.36,1)",
+            flexShrink: 0,
+          }}
+          className="hover:border-indigo-400/50 hover:bg-indigo-50 dark:hover:border-cyan-400/40 dark:hover:bg-cyan-400/8"
+        >
+          {isDark
+            ? <Sun className="h-4 w-4 text-amber-400" />
+            : <Moon className="h-4 w-4 text-slate-600" />
+          }
+        </button>
       </div>
 
+      {/* ── Mobile quote ─────────────────────────────────────────────────── */}
       <div
-        className={`mx-auto mt-2 w-full max-w-7xl overflow-hidden rounded-[1.75rem] border border-white/15 bg-slate-950/92 shadow-[0_18px_44px_rgba(15,23,42,0.35)] backdrop-blur-xl transition-all duration-300 md:hidden ${
-          mobileOpen ? "max-h-96 opacity-100" : "pointer-events-none max-h-0 opacity-0"
-        }`}
+        className={`mx-auto mt-2 w-full overflow-hidden rounded-2xl border px-5 py-3 backdrop-blur-xl transition-all duration-500 md:hidden ${
+          scrolled ? "opacity-0 pointer-events-none max-h-0 py-0 mt-0" : "opacity-100 max-h-20"
+        } border-slate-200/40 bg-white/60 dark:border-white/8 dark:bg-slate-950/50`}
       >
-        <nav className="flex flex-col gap-1 px-4 py-4">
-          {navLinks.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              onClick={() => setMobileOpen(false)}
-              className="rounded-2xl px-4 py-3 text-base font-medium text-slate-100 transition hover:bg-white/10"
-            >
-              {link.name}
-            </a>
-          ))}
-        </nav>
+        <p
+          style={{
+            fontFamily: "'DM Sans', sans-serif",
+            fontSize: 11.5,
+            fontWeight: 400,
+            fontStyle: "italic",
+            letterSpacing: "0.01em",
+            lineHeight: 1.5,
+            textAlign: "center",
+          }}
+          className="text-slate-500 dark:text-slate-400"
+        >
+          <span style={{ color: isDark ? "rgba(6,182,212,0.7)" : "rgba(99,102,241,0.7)", marginRight: 4 }}>"</span>
+          My next chapter is already prepared and I am ready to step into it
+          <span style={{ color: isDark ? "rgba(6,182,212,0.7)" : "rgba(99,102,241,0.7)", marginLeft: 4 }}>"</span>
+        </p>
       </div>
+
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;1,9..40,300;1,9..40,400&display=swap');
+        @keyframes logoPulse {
+          0%, 100% { opacity: 0.6; transform: scale(0.95); }
+          50%       { opacity: 1;   transform: scale(1.05); }
+        }
+      `}</style>
     </header>
   );
 };
 
-export default Header;
+export default ModernHeader;
