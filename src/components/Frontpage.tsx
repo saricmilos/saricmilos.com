@@ -265,7 +265,7 @@ function StackPill({ label, emoji }: { label: string; emoji: string }) {
       }}
     >
       <span style={{ fontSize: 14 }}>{emoji}</span>
-      <span style={{ fontFamily: "'Syne',sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: hovered ? "rgba(199,210,254,0.95)" : "rgba(148,163,184,0.7)" }}>
+      <span style={{ fontFamily: "'Syne',sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: hovered ? "rgba(199,210,254,0.95)" : "rgba(255,255,255,0.85)" }}>
         {label}
       </span>
     </div>
@@ -277,7 +277,7 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
       <div style={{ flex: 1, height: 1, background: "rgba(99,102,241,0.2)" }} />
-      <span style={{ fontFamily: "'Syne',sans-serif", fontSize: 9, fontWeight: 800, letterSpacing: "0.28em", textTransform: "uppercase", color: "rgba(148,163,184,0.45)" }}>
+      <span style={{ fontFamily: "'Syne',sans-serif", fontSize: 9, fontWeight: 800, letterSpacing: "0.28em", textTransform: "uppercase", color: "rgba(255,255,255,0.85)" }}>
         {children}
       </span>
       <div style={{ flex: 1, height: 1, background: "rgba(99,102,241,0.2)" }} />
@@ -539,7 +539,7 @@ const Frontpage = () => {
                     ))}
                   </div>
 
-                  <p style={{ fontSize: 15, color: "rgba(148,163,184,0.65)", lineHeight: 1.7, maxWidth: 440 }}>
+                  <p style={{ fontSize: 15, color: "rgba(255,255,255,0.85)", lineHeight: 1.7, maxWidth: 440 }}>
                     I teach machines to think, occasionally wonder if they&apos;re judging me back, and ship things that actually work — not just in notebooks.
                   </p>
                 </div>
@@ -593,7 +593,7 @@ const Frontpage = () => {
                       Master's Thesis
                     </span>
                   </div>
-                  <span style={{ fontSize: 10, color: "rgba(148,163,184,0.55)", lineHeight: 1.4, paddingLeft: 24 }}>
+                  <span style={{ fontSize: 10, color: "rgba(255,255,255,0.8)", lineHeight: 1.4, paddingLeft: 24 }}>
                     Proof that I once suffered for science 📄✨
                   </span>
                 </a>
@@ -635,7 +635,7 @@ const Frontpage = () => {
                       Business
                     </span>
                   </div>
-                  <span style={{ fontSize: 10, color: "rgba(148,163,184,0.55)", lineHeight: 1.4, paddingLeft: 23 }}>
+                  <span style={{ fontSize: 10, color: "rgba(255,255,255,0.8)", lineHeight: 1.4, paddingLeft: 23 }}>
                     Where I pretend to be professional 💼✨
                   </span>
                 </a>
@@ -670,7 +670,7 @@ const Frontpage = () => {
                       Private
                     </span>
                   </div>
-                  <span style={{ fontSize: 10, color: "rgba(148,163,184,0.55)", lineHeight: 1.4, paddingLeft: 23 }}>
+                  <span style={{ fontSize: 10, color: "rgba(255,255,255,0.8)", lineHeight: 1.4, paddingLeft: 23 }}>
                     The unfiltered version. Enter at own risk 👀
                   </span>
                 </a>
@@ -701,7 +701,7 @@ const Frontpage = () => {
                 </div>
 
                 {/* Fun footnote */}
-                <p style={{ marginTop: 16, fontSize: 11, color: "rgba(100,116,139,0.55)", fontStyle: "italic", lineHeight: 1.5 }}>
+                <p style={{ marginTop: 16, fontSize: 11, color: "rgba(255,255,255,0.7)", fontStyle: "italic", lineHeight: 1.5 }}>
                   * No models were harmed in the making of this portfolio. A few GPUs might have been.
                 </p>
               </div>
@@ -729,7 +729,7 @@ const Frontpage = () => {
                     }}
                   >
                     <div style={{ fontFamily: "'Syne',sans-serif", fontSize: 20, fontWeight: 800, color: "#f1f5f9", lineHeight: 1 }}>{fact.value}</div>
-                    <div style={{ fontSize: 11, color: "rgba(148,163,184,0.5)", marginTop: 3 }}>{fact.label}</div>
+                    <div style={{ fontSize: 11, color: "rgba(255,255,255,0.75)", marginTop: 3 }}>{fact.label}</div>
                     <div style={{ fontSize: 10, color: "rgba(99,102,241,0.6)", marginTop: 2, fontStyle: "italic" }}>{fact.sub}</div>
                   </div>
                 ))}
@@ -753,7 +753,7 @@ const Frontpage = () => {
             {["Python > pseudocode", "ML > magic", "Sleep < deadlines"].map((label) => (
               <div key={label} style={{ display: "flex", alignItems: "center", gap: 5 }}>
                 <div style={{ width: 5, height: 5, borderRadius: "50%", background: "rgba(6,182,212,0.7)" }} />
-                <span style={{ fontSize: 10, color: "rgba(100,116,139,0.8)", fontWeight: 500 }}>{label}</span>
+                <span style={{ fontSize: 10, color: "rgba(255,255,255,0.75)", fontWeight: 500 }}>{label}</span>
               </div>
             ))}
             <div style={{ flex: 1, height: 1, background: "rgba(51,65,85,0.5)" }} />
