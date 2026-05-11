@@ -243,6 +243,150 @@ function GalaxyLink({
   );
 }
 
+// ─── Mobile Linktree Link ─────────────────────────────────────────────────────
+function MobileLink({
+  href,
+  label,
+  sublabel,
+  icon,
+  accent = "indigo",
+  badge,
+}: {
+  href: string;
+  label: string;
+  sublabel?: string;
+  icon: React.ReactNode;
+  accent?: "indigo" | "cyan" | "purple" | "pink";
+  badge?: string;
+}) {
+  const [pressed, setPressed] = useState(false);
+
+  const colors: Record<string, { border: string; bg: string; text: string; sub: string; badgeBg: string; badgeBorder: string; badgeText: string; glow: string }> = {
+    indigo: {
+      border: pressed ? "rgba(99,102,241,0.6)" : "rgba(99,102,241,0.25)",
+      bg: pressed ? "rgba(99,102,241,0.18)" : "rgba(99,102,241,0.08)",
+      text: "#c7d2fe",
+      sub: "rgba(199,210,254,0.6)",
+      badgeBg: "rgba(99,102,241,0.15)",
+      badgeBorder: "rgba(99,102,241,0.35)",
+      badgeText: "rgba(199,210,254,0.9)",
+      glow: pressed ? "0 0 28px rgba(99,102,241,0.25)" : "0 2px 12px rgba(0,0,0,0.4)",
+    },
+    cyan: {
+      border: pressed ? "rgba(6,182,212,0.8)" : "rgba(6,182,212,0.3)",
+      bg: pressed ? "rgba(6,182,212,0.18)" : "rgba(6,182,212,0.08)",
+      text: "#e0f9ff",
+      sub: "rgba(224,249,255,0.6)",
+      badgeBg: "rgba(6,182,212,0.15)",
+      badgeBorder: "rgba(6,182,212,0.35)",
+      badgeText: "rgba(6,182,212,0.95)",
+      glow: pressed ? "0 0 28px rgba(6,182,212,0.25)" : "0 2px 12px rgba(0,0,0,0.4)",
+    },
+    purple: {
+      border: pressed ? "rgba(139,92,246,0.7)" : "rgba(139,92,246,0.25)",
+      bg: pressed ? "rgba(139,92,246,0.18)" : "rgba(139,92,246,0.07)",
+      text: "#ddd6fe",
+      sub: "rgba(221,214,254,0.6)",
+      badgeBg: "rgba(139,92,246,0.15)",
+      badgeBorder: "rgba(139,92,246,0.35)",
+      badgeText: "rgba(167,139,250,0.9)",
+      glow: pressed ? "0 0 28px rgba(139,92,246,0.25)" : "0 2px 12px rgba(0,0,0,0.4)",
+    },
+    pink: {
+      border: pressed ? "rgba(236,72,153,0.7)" : "rgba(236,72,153,0.25)",
+      bg: pressed ? "rgba(236,72,153,0.16)" : "rgba(236,72,153,0.06)",
+      text: "#fbcfe8",
+      sub: "rgba(251,207,232,0.6)",
+      badgeBg: "rgba(236,72,153,0.15)",
+      badgeBorder: "rgba(236,72,153,0.35)",
+      badgeText: "rgba(251,207,232,0.9)",
+      glow: pressed ? "0 0 28px rgba(236,72,153,0.25)" : "0 2px 12px rgba(0,0,0,0.4)",
+    },
+  };
+
+  const c = colors[accent];
+
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      onTouchStart={() => setPressed(true)}
+      onTouchEnd={() => setPressed(false)}
+      onMouseEnter={() => setPressed(true)}
+      onMouseLeave={() => setPressed(false)}
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: 14,
+        padding: "16px 20px",
+        borderRadius: 18,
+        border: `1px solid ${c.border}`,
+        background: c.bg,
+        backdropFilter: "blur(16px)",
+        boxShadow: c.glow,
+        textDecoration: "none",
+        transition: "all 0.2s cubic-bezier(0.22,1,0.36,1)",
+        transform: pressed ? "scale(0.98)" : "scale(1)",
+        WebkitTapHighlightColor: "transparent",
+      }}
+    >
+      <span style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        width: 40,
+        height: 40,
+        borderRadius: 12,
+        background: c.badgeBg,
+        border: `1px solid ${c.badgeBorder}`,
+        color: c.text,
+        flexShrink: 0,
+      }}>
+        {icon}
+      </span>
+      <span style={{ flex: 1, minWidth: 0 }}>
+        <span style={{
+          display: "block",
+          fontFamily: "'Syne',sans-serif",
+          fontSize: 15,
+          fontWeight: 700,
+          letterSpacing: "0.04em",
+          color: c.text,
+          lineHeight: 1.2,
+        }}>{label}</span>
+        {sublabel && (
+          <span style={{
+            display: "block",
+            fontSize: 11,
+            color: c.sub,
+            marginTop: 2,
+            lineHeight: 1.3,
+          }}>{sublabel}</span>
+        )}
+      </span>
+      {badge && (
+        <span style={{
+          flexShrink: 0,
+          fontSize: 9,
+          fontFamily: "'Syne',sans-serif",
+          fontWeight: 800,
+          letterSpacing: "0.14em",
+          textTransform: "uppercase",
+          padding: "3px 8px",
+          borderRadius: 8,
+          background: c.badgeBg,
+          border: `1px solid ${c.badgeBorder}`,
+          color: c.badgeText,
+        }}>{badge}</span>
+      )}
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={c.text} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, opacity: 0.5 }}>
+        <path d="M7 17L17 7M17 7H7M17 7v10" />
+      </svg>
+    </a>
+  );
+}
+
 // ─── Stack pill ───────────────────────────────────────────────────────────────
 function StackPill({ label, emoji }: { label: string; emoji: string }) {
   const [hovered, setHovered] = useState(false);
@@ -287,7 +431,7 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 
 // ─── SVG Icons ────────────────────────────────────────────────────────────────
 const InstagramIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
     <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
     <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
@@ -295,22 +439,39 @@ const InstagramIcon = () => (
 );
 
 const TikTokIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
     <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.3 6.3 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.19 8.19 0 0 0 4.81 1.55V6.8a4.85 4.85 0 0 1-1.04-.11z" />
   </svg>
 );
 
 const YoutubeIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
     <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
   </svg>
 );
 
 const ThesisIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M12 2L2 7l10 5 10-5-10-5z" />
     <path d="M2 17l10 5 10-5" />
     <path d="M2 12l10 5 10-5" />
+  </svg>
+);
+
+const GlobeIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="10" />
+    <line x1="2" y1="12" x2="22" y2="12" />
+    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+  </svg>
+);
+
+const RocketIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z" />
+    <path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z" />
+    <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0" />
+    <path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5" />
   </svg>
 );
 
@@ -387,11 +548,40 @@ const Frontpage = () => {
           0%,100% { transform:translateY(0px) rotate(-2deg); }
           50%      { transform:translateY(-6px) rotate(-2deg); }
         }
+        @keyframes mobileAvatarGlow {
+          0%,100% { opacity:0.6; transform:scale(1); }
+          50%      { opacity:1; transform:scale(1.02); }
+        }
+        @keyframes mobileFadeUp {
+          from { opacity:0; transform:translateY(24px); }
+          to   { opacity:1; transform:translateY(0); }
+        }
 
         .logo-spin  { animation:spinSlow 20s linear infinite; }
         .logo-pulse { animation:pulseRing 3s ease-in-out infinite; }
         .glow-pulse { animation:glowPulse 6s ease-in-out infinite; }
         .badge-float { animation:badgeFloat 4s ease-in-out infinite; }
+
+        /* ── Desktop only ── */
+        .desktop-only { display: flex; }
+        .mobile-only  { display: none; }
+
+        /* ── Mobile breakpoint ── */
+        @media (max-width: 768px) {
+          .desktop-only { display: none !important; }
+          .mobile-only  { display: flex !important; }
+        }
+
+        /* ── Mobile linktree animations ── */
+        .mobile-item-1 { animation: mobileFadeUp 0.6s 0.1s both ease; }
+        .mobile-item-2 { animation: mobileFadeUp 0.6s 0.2s both ease; }
+        .mobile-item-3 { animation: mobileFadeUp 0.6s 0.3s both ease; }
+        .mobile-item-4 { animation: mobileFadeUp 0.6s 0.4s both ease; }
+        .mobile-item-5 { animation: mobileFadeUp 0.6s 0.5s both ease; }
+        .mobile-item-6 { animation: mobileFadeUp 0.6s 0.6s both ease; }
+        .mobile-item-7 { animation: mobileFadeUp 0.6s 0.7s both ease; }
+        .mobile-item-8 { animation: mobileFadeUp 0.6s 0.8s both ease; }
+        .mobile-item-9 { animation: mobileFadeUp 0.6s 0.9s both ease; }
       `}</style>
 
       <main style={{ fontFamily: "'DM Sans',sans-serif", minHeight: "100vh", position: "relative", overflow: "hidden", background: "#020817" }}>
@@ -423,11 +613,13 @@ const Frontpage = () => {
           style={{ background: "radial-gradient(ellipse 65% 50% at 50% 40%,rgba(99,102,241,0.1),transparent 70%)" }}
         />
 
-        {/* ── Page layout ─────────────────────────────────────────────────── */}
-        <div style={{ position: "relative", zIndex: 10, display: "flex", flexDirection: "column", minHeight: "100vh", padding: "40px 64px 60px" }}>
-
-
-
+        {/* ════════════════════════════════════════════════════════════════════
+            DESKTOP LAYOUT (hidden on mobile)
+        ════════════════════════════════════════════════════════════════════ */}
+        <div
+          className="desktop-only"
+          style={{ position: "relative", zIndex: 10, flexDirection: "column", minHeight: "100vh", padding: "40px 64px 60px" }}
+        >
           {/* ── Hero: full-width layout ──────────────────────────────────────── */}
           <div style={{
             display: "flex",
@@ -590,7 +782,7 @@ const Frontpage = () => {
                   <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                     <ThesisIcon />
                     <span style={{ fontFamily: "'Syne',sans-serif", fontSize: 12, fontWeight: 800, letterSpacing: "0.08em", color: "rgba(6,182,212,0.9)", textTransform: "uppercase" }}>
-                      Master's Thesis
+                      Master&apos;s Thesis
                     </span>
                   </div>
                   <span style={{ fontSize: 10, color: "rgba(255,255,255,0.8)", lineHeight: 1.4, paddingLeft: 24 }}>
@@ -757,6 +949,221 @@ const Frontpage = () => {
               </div>
             ))}
             <div style={{ flex: 1, height: 1, background: "rgba(51,65,85,0.5)" }} />
+          </div>
+        </div>
+
+        {/* ════════════════════════════════════════════════════════════════════
+            MOBILE LINKTREE (hidden on desktop)
+        ════════════════════════════════════════════════════════════════════ */}
+        <div
+          className="mobile-only"
+          style={{
+            position: "relative",
+            zIndex: 10,
+            flexDirection: "column",
+            alignItems: "center",
+            minHeight: "100vh",
+            padding: "48px 20px 60px",
+            width: "100%",
+          }}
+        >
+          <div style={{
+            width: "100%",
+            maxWidth: 420,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: 0,
+          }}>
+
+            {/* ── Avatar ─────────────────────────────────────────────────── */}
+            <div className="mobile-item-1" style={{ position: "relative", marginBottom: 20 }}>
+              {/* Outer glow ring */}
+              <div style={{
+                position: "absolute",
+                inset: -4,
+                borderRadius: "50%",
+                background: "linear-gradient(135deg,rgba(6,182,212,0.6),rgba(99,102,241,0.5),rgba(139,92,246,0.6))",
+                filter: "blur(10px)",
+                animation: "mobileAvatarGlow 4s ease-in-out infinite",
+              }} />
+              {/* Border ring */}
+              <div style={{
+                position: "absolute",
+                inset: -2,
+                borderRadius: "50%",
+                background: "linear-gradient(135deg,rgba(6,182,212,0.8),rgba(99,102,241,0.6),rgba(139,92,246,0.8))",
+                padding: 2,
+              }} />
+              {/* Photo circle */}
+              <div style={{
+                width: 112,
+                height: 112,
+                borderRadius: "50%",
+                overflow: "hidden",
+                position: "relative",
+                border: "2px solid rgba(6,182,212,0.4)",
+                background: "rgba(15,23,42,0.9)",
+              }}>
+                <img
+                  src="/Me.jpg"
+                  alt="Milos Saric"
+                  loading="eager"
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                    objectPosition: "center top",
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* ── Name ───────────────────────────────────────────────────── */}
+            <h1 className="mobile-item-2" style={{
+              fontFamily: "'Syne',sans-serif",
+              fontSize: 28,
+              fontWeight: 800,
+              letterSpacing: "-0.03em",
+              color: "#f1f5f9",
+              lineHeight: 1.1,
+              textAlign: "center",
+              marginBottom: 10,
+            }}>
+              Milos Saric
+            </h1>
+
+            {/* ── Role badges ────────────────────────────────────────────── */}
+            <div className="mobile-item-3" style={{ display: "flex", flexWrap: "wrap", gap: 6, justifyContent: "center", marginBottom: 14 }}>
+              {["ML / AI Engineer", "Data Scientist"].map((role) => (
+                <span key={role} style={{
+                  fontFamily: "'Syne',sans-serif",
+                  fontSize: 11,
+                  fontWeight: 700,
+                  letterSpacing: "0.06em",
+                  padding: "4px 12px",
+                  borderRadius: 20,
+                  background: "rgba(99,102,241,0.12)",
+                  border: "1px solid rgba(99,102,241,0.3)",
+                  color: "rgba(199,210,254,0.9)",
+                }}>
+                  {role}
+                </span>
+              ))}
+            </div>
+
+            {/* ── Bio ────────────────────────────────────────────────────── */}
+            <p className="mobile-item-4" style={{
+              fontSize: 13,
+              color: "rgba(255,255,255,0.7)",
+              lineHeight: 1.65,
+              textAlign: "center",
+              marginBottom: 32,
+              maxWidth: 320,
+            }}>
+              I teach machines to think, occasionally wonder if they&apos;re judging me back, and ship things that actually work.
+            </p>
+
+            {/* ── Links ──────────────────────────────────────────────────── */}
+            <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 10 }}>
+
+              {/* Socials section */}
+              <div className="mobile-item-5" style={{ marginBottom: 4 }}>
+                <SectionLabel>Find me online</SectionLabel>
+              </div>
+
+              <div className="mobile-item-5">
+                <MobileLink
+                  href="https://instagram.com/sariccmilos"
+                  label="Instagram"
+                  sublabel="@sariccmilos"
+                  icon={<InstagramIcon />}
+                  accent="pink"
+                />
+              </div>
+
+              <div className="mobile-item-6">
+                <MobileLink
+                  href="https://tiktok.com/@sariccmilos"
+                  label="TikTok"
+                  sublabel="@sariccmilos"
+                  icon={<TikTokIcon />}
+                  accent="purple"
+                />
+              </div>
+
+              <div className="mobile-item-7">
+                <MobileLink
+                  href="https://youtube.com/@saricmilos"
+                  label="YouTube"
+                  sublabel="@saricmilos"
+                  icon={<YoutubeIcon />}
+                  accent="indigo"
+                />
+              </div>
+
+              <div className="mobile-item-8">
+                <MobileLink
+                  href="https://upcommons.upc.edu/server/api/core/bitstreams/67a5f746-ba7f-4f95-a278-d27986893298/content"
+                  label="Master's Thesis"
+                  sublabel="Proof I once suffered for science 📄"
+                  icon={<ThesisIcon />}
+                  accent="cyan"
+                  badge="PDF"
+                />
+              </div>
+
+              {/* Projects section */}
+              <div style={{ height: 8 }} />
+              <div className="mobile-item-8" style={{ marginBottom: 4 }}>
+                <SectionLabel>Projects</SectionLabel>
+              </div>
+
+              <div className="mobile-item-8">
+                <MobileLink
+                  href="https://cassiopeiai.com/"
+                  label="Cassiopeia AI"
+                  sublabel="Where I pretend to be professional 💼"
+                  icon={<RocketIcon />}
+                  accent="cyan"
+                  badge="Business"
+                />
+              </div>
+
+              <div className="mobile-item-9">
+                <MobileLink
+                  href="https://milos-saric.com"
+                  label="milos-saric.com"
+                  sublabel="The unfiltered version. Enter at own risk 👀"
+                  icon={<GlobeIcon />}
+                  accent="purple"
+                  badge="Personal"
+                />
+              </div>
+
+              {/* Stack chips */}
+              <div style={{ height: 8 }} />
+              <div className="mobile-item-9" style={{ marginBottom: 4 }}>
+                <SectionLabel>Tech Stack</SectionLabel>
+              </div>
+
+              <div className="mobile-item-9" style={{ display: "flex", flexWrap: "wrap", gap: 7, justifyContent: "center" }}>
+                {stack.map((item) => (
+                  <StackPill key={item.label} label={item.label} emoji={item.emoji} />
+                ))}
+              </div>
+
+            </div>
+
+            {/* ── Mobile footer ──────────────────────────────────────────── */}
+            <div style={{ marginTop: 40, display: "flex", alignItems: "center", gap: 8 }}>
+              <div style={{ width: 4, height: 4, borderRadius: "50%", background: "rgba(6,182,212,0.6)" }} />
+              <span style={{ fontSize: 10, color: "rgba(255,255,255,0.4)", fontFamily: "'Syne',sans-serif", letterSpacing: "0.1em" }}>
+                Sleep &lt; Deadlines
+              </span>
+              <div style={{ width: 4, height: 4, borderRadius: "50%", background: "rgba(99,102,241,0.6)" }} />
+            </div>
+
           </div>
         </div>
 
