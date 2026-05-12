@@ -12,14 +12,59 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const siteUrl = "https://www.saricmilos.com";
+const defaultTitle = "Milos Saric | ML / AI Engineer";
+const defaultDescription =
+  "Milos Saric is an ML/AI Engineer and Data Scientist building production AI systems, analytics platforms, and applied machine learning products.";
+
 export const metadata: Metadata = {
-  metadataBase: new URL("https://www.saricmilos.com"),
+  metadataBase: new URL(siteUrl),
   alternates: {
     canonical: "/",
   },
-  title: "Milos Saric | ML / AI Engineer",
-  description:
-    "I teach machines to think, occasionally wonder if they're judging me back, and ship things that actually work — not just in notebooks.",
+  title: {
+    default: defaultTitle,
+    template: "%s | Milos Saric",
+  },
+  description: defaultDescription,
+  applicationName: "saricmilos.com",
+  authors: [{ name: "Milos Saric", url: siteUrl }],
+  creator: "Milos Saric",
+  publisher: "Milos Saric",
+  keywords: [
+    "Milos Saric",
+    "ML Engineer",
+    "AI Engineer",
+    "Data Scientist",
+    "Machine Learning Portfolio",
+    "Applied AI",
+    "NLP Engineer",
+  ],
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
+  openGraph: {
+    type: "profile",
+    locale: "en_US",
+    url: siteUrl,
+    siteName: "saricmilos.com",
+    title: defaultTitle,
+    description: defaultDescription,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: defaultTitle,
+    description: defaultDescription,
+    creator: "@sariccmilos",
+  },
 };
 
 export default function RootLayout({

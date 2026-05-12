@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 
 // ─── Cassiopeia Stars Canvas ──────────────────────────────────────────────────
@@ -21,7 +22,7 @@ function CassiopeiaStars({ className = "absolute inset-0 h-full w-full" }: { cla
 
     type Star = { x: number; y: number; radius: number; opacity: number; twinkleSpeed: number; twinklePhase: number };
     const stars: Star[] = [];
-    for (let i = 0; i < 300; i++) {
+    for (let i = 0; i < 140; i++) {
       stars.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
@@ -217,7 +218,7 @@ function GalaxyLink({
         border: `1px solid ${hovered ? c.border[0] : c.border[1]}`,
         background: hovered ? c.bg[0] : c.bg[1],
         color: hovered ? c.text[0] : c.text[1],
-        fontFamily: "'Syne', sans-serif",
+        fontFamily: "var(--font-geist-sans), sans-serif",
         fontSize: 13,
         fontWeight: 700,
         letterSpacing: "0.06em",
@@ -251,6 +252,7 @@ function MobileLink({
   icon,
   accent = "indigo",
   badge,
+  rel = "noopener noreferrer",
 }: {
   href: string;
   label: string;
@@ -258,6 +260,7 @@ function MobileLink({
   icon: React.ReactNode;
   accent?: "indigo" | "cyan" | "purple" | "pink";
   badge?: string;
+  rel?: string;
 }) {
   const [pressed, setPressed] = useState(false);
 
@@ -310,7 +313,7 @@ function MobileLink({
     <a
       href={href}
       target="_blank"
-      rel="noopener noreferrer"
+      rel={rel}
       onTouchStart={() => setPressed(true)}
       onTouchEnd={() => setPressed(false)}
       onMouseEnter={() => setPressed(true)}
@@ -348,7 +351,7 @@ function MobileLink({
       <span style={{ flex: 1, minWidth: 0 }}>
         <span style={{
           display: "block",
-          fontFamily: "'Syne',sans-serif",
+          fontFamily: "var(--font-geist-sans), sans-serif",
           fontSize: 15,
           fontWeight: 700,
           letterSpacing: "0.04em",
@@ -369,7 +372,7 @@ function MobileLink({
         <span style={{
           flexShrink: 0,
           fontSize: 9,
-          fontFamily: "'Syne',sans-serif",
+          fontFamily: "var(--font-geist-sans), sans-serif",
           fontWeight: 800,
           letterSpacing: "0.14em",
           textTransform: "uppercase",
@@ -409,7 +412,7 @@ function StackPill({ label, emoji }: { label: string; emoji: string }) {
       }}
     >
       <span style={{ fontSize: 14 }}>{emoji}</span>
-      <span style={{ fontFamily: "'Syne',sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: hovered ? "rgba(199,210,254,0.95)" : "rgba(255,255,255,0.85)" }}>
+      <span style={{ fontFamily: "var(--font-geist-sans), sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: hovered ? "rgba(199,210,254,0.95)" : "rgba(255,255,255,0.85)" }}>
         {label}
       </span>
     </div>
@@ -421,7 +424,7 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
       <div style={{ flex: 1, height: 1, background: "rgba(99,102,241,0.2)" }} />
-      <span style={{ fontFamily: "'Syne',sans-serif", fontSize: 9, fontWeight: 800, letterSpacing: "0.28em", textTransform: "uppercase", color: "rgba(255,255,255,0.85)" }}>
+      <span style={{ fontFamily: "var(--font-geist-sans), sans-serif", fontSize: 9, fontWeight: 800, letterSpacing: "0.28em", textTransform: "uppercase", color: "rgba(255,255,255,0.85)" }}>
         {children}
       </span>
       <div style={{ flex: 1, height: 1, background: "rgba(99,102,241,0.2)" }} />
@@ -528,16 +531,16 @@ function NowSection() {
             <div style={{ position: "absolute", inset: 0, borderRadius: "50%", background: "rgba(6,182,212,1)", animation: "liveping 1.8s ease-in-out infinite" }} />
             <div style={{ position: "absolute", inset: 0, borderRadius: "50%", background: "rgba(6,182,212,1)" }} />
           </div>
-          <span style={{ fontFamily: "'Syne',sans-serif", fontSize: 11, fontWeight: 800, letterSpacing: "0.22em", textTransform: "uppercase", color: "rgba(6,182,212,0.9)" }}>
+          <span style={{ fontFamily: "var(--font-geist-sans), sans-serif", fontSize: 11, fontWeight: 800, letterSpacing: "0.22em", textTransform: "uppercase", color: "rgba(6,182,212,0.9)" }}>
             Now
           </span>
-          <span style={{ fontSize: 10, color: "rgba(255,255,255,0.35)", fontFamily: "'Syne',sans-serif", letterSpacing: "0.1em" }}>
+          <span style={{ fontSize: 10, color: "rgba(255,255,255,0.35)", fontFamily: "var(--font-geist-sans), sans-serif", letterSpacing: "0.1em" }}>
             · what I&apos;m actually doing at this moment in time
           </span>
         </div>
         <span style={{
           fontSize: 9,
-          fontFamily: "'Syne',sans-serif",
+          fontFamily: "var(--font-geist-sans), sans-serif",
           fontWeight: 800,
           letterSpacing: "0.16em",
           textTransform: "uppercase",
@@ -557,7 +560,7 @@ function NowSection() {
         {/* Left: project description */}
         <div>
           <h3 style={{
-            fontFamily: "'Syne',sans-serif",
+            fontFamily: "var(--font-geist-sans), sans-serif",
             fontSize: 18,
             fontWeight: 800,
             letterSpacing: "-0.02em",
@@ -567,7 +570,7 @@ function NowSection() {
           }}>
             Creator Operating System
           </h3>
-          <p style={{ fontSize: 12, color: "rgba(6,182,212,0.8)", fontFamily: "'Syne',sans-serif", fontWeight: 700, letterSpacing: "0.06em", marginBottom: 16, textTransform: "uppercase" }}>
+          <p style={{ fontSize: 12, color: "rgba(6,182,212,0.8)", fontFamily: "var(--font-geist-sans), sans-serif", fontWeight: 700, letterSpacing: "0.06em", marginBottom: 16, textTransform: "uppercase" }}>
             Cross-Platform Content Intelligence
           </p>
 
@@ -593,8 +596,8 @@ function NowSection() {
               textAlign: "center",
             }}>
               <div style={{ fontSize: 16, marginBottom: 4 }}>{s.emoji}</div>
-              <div style={{ fontFamily: "'Syne',sans-serif", fontSize: 17, fontWeight: 800, color: "#f1f5f9", lineHeight: 1, letterSpacing: "-0.02em" }}>{s.value}</div>
-              <div style={{ fontSize: 10, color: "rgba(255,255,255,0.45)", marginTop: 3, fontFamily: "'Syne',sans-serif", letterSpacing: "0.06em" }}>{s.label}</div>
+              <div style={{ fontFamily: "var(--font-geist-sans), sans-serif", fontSize: 17, fontWeight: 800, color: "#f1f5f9", lineHeight: 1, letterSpacing: "-0.02em" }}>{s.value}</div>
+              <div style={{ fontSize: 10, color: "rgba(255,255,255,0.45)", marginTop: 3, fontFamily: "var(--font-geist-sans), sans-serif", letterSpacing: "0.06em" }}>{s.label}</div>
             </div>
           ))}
           <div style={{
@@ -606,7 +609,7 @@ function NowSection() {
             textAlign: "center",
             fontSize: 10,
             color: "rgba(199,210,254,0.7)",
-            fontFamily: "'Syne',sans-serif",
+            fontFamily: "var(--font-geist-sans), sans-serif",
             letterSpacing: "0.08em",
           }}>
             855 followers · 21,192 likes · 817 comments · 3,524 saves
@@ -650,7 +653,6 @@ const Frontpage = () => {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap');
         * { box-sizing: border-box; }
 
         @keyframes orbFloat1 {
@@ -739,7 +741,7 @@ const Frontpage = () => {
         .mobile-item-9 { animation: mobileFadeUp 0.6s 0.9s both ease; }
       `}</style>
 
-      <main className="main-bg" style={{ fontFamily: "'DM Sans',sans-serif", minHeight: "100vh", position: "relative", overflow: "hidden", background: "#020817" }}>
+      <main className="main-bg" style={{ fontFamily: "var(--font-geist-sans), sans-serif", minHeight: "100vh", position: "relative", overflow: "hidden", background: "#020817" }}>
 
         {/* ── Star canvas ─────────────────────────────────────────────────── */}
         <CassiopeiaStars className="desktop-fx absolute inset-0 h-full w-full" />
@@ -842,15 +844,16 @@ const Frontpage = () => {
                         <circle cx="12" cy="8" r="4" stroke="rgba(99,102,241,0.5)" strokeWidth="1.5" />
                         <path d="M4 20a8 8 0 0 1 16 0" stroke="rgba(99,102,241,0.5)" strokeWidth="1.5" strokeLinecap="round" />
                       </svg>
-                      <span style={{ fontSize: 9, color: "rgba(99,102,241,0.5)", fontFamily: "'Syne',sans-serif", letterSpacing: "0.15em", textTransform: "uppercase" }}>Your photo here</span>
+                      <span style={{ fontSize: 9, color: "rgba(99,102,241,0.5)", fontFamily: "var(--font-geist-sans), sans-serif", letterSpacing: "0.15em", textTransform: "uppercase" }}>Your photo here</span>
                     </div>
                   )}
-                  <img
+                  <Image
                     ref={photoRef}
                     src="/Me.jpg"
                     alt="Milos Saric"
-                    loading="eager"
-                    fetchPriority="high"
+                    priority
+                    width={760}
+                    height={920}
                     onLoad={() => setPhotoLoaded(true)}
                     onError={() => setPhotoLoaded(true)}
                     style={{
@@ -877,7 +880,7 @@ const Frontpage = () => {
                 {/* Title block */}
                 <div>
                   <h1 style={{
-                    fontFamily: "'Syne',sans-serif",
+                    fontFamily: "var(--font-geist-sans), sans-serif",
                     fontSize: "clamp(32px,4.5vw,54px)",
                     fontWeight: 800,
                     letterSpacing: "-0.03em",
@@ -891,7 +894,7 @@ const Frontpage = () => {
                   <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 16 }}>
                     {["ML / AI Engineer", "Data Scientist"].map((role) => (
                       <span key={role} style={{
-                        fontFamily: "'Syne',sans-serif",
+                        fontFamily: "var(--font-geist-sans), sans-serif",
                         fontSize: 13,
                         fontWeight: 700,
                         letterSpacing: "0.06em",
@@ -968,7 +971,7 @@ const Frontpage = () => {
                 >
                   <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                     <ThesisIcon />
-                    <span style={{ fontFamily: "'Syne',sans-serif", fontSize: 12, fontWeight: 800, letterSpacing: "0.08em", color: "rgba(6,182,212,0.9)", textTransform: "uppercase" }}>
+                    <span style={{ fontFamily: "var(--font-geist-sans), sans-serif", fontSize: 12, fontWeight: 800, letterSpacing: "0.08em", color: "rgba(6,182,212,0.9)", textTransform: "uppercase" }}>
                       Master&apos;s Thesis
                     </span>
                   </div>
@@ -1006,11 +1009,11 @@ const Frontpage = () => {
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                       <span style={{ fontSize: 15 }}>🚀</span>
-                      <span style={{ fontFamily: "'Syne',sans-serif", fontSize: 12, fontWeight: 800, letterSpacing: "0.08em", color: "rgba(6,182,212,0.95)", textTransform: "uppercase" }}>
+                      <span style={{ fontFamily: "var(--font-geist-sans), sans-serif", fontSize: 12, fontWeight: 800, letterSpacing: "0.08em", color: "rgba(6,182,212,0.95)", textTransform: "uppercase" }}>
                         Cassiopeia AI
                       </span>
                     </div>
-                    <span style={{ fontSize: 8, fontFamily: "'Syne',sans-serif", fontWeight: 800, letterSpacing: "0.18em", textTransform: "uppercase", padding: "2px 7px", borderRadius: 6, background: "rgba(6,182,212,0.15)", border: "1px solid rgba(6,182,212,0.3)", color: "rgba(6,182,212,0.8)" }}>
+                    <span style={{ fontSize: 8, fontFamily: "var(--font-geist-sans), sans-serif", fontWeight: 800, letterSpacing: "0.18em", textTransform: "uppercase", padding: "2px 7px", borderRadius: 6, background: "rgba(6,182,212,0.15)", border: "1px solid rgba(6,182,212,0.3)", color: "rgba(6,182,212,0.8)" }}>
                       Business
                     </span>
                   </div>
@@ -1023,7 +1026,7 @@ const Frontpage = () => {
                 <a
                   href="https://milos-saric.com"
                   target="_blank"
-                  rel="noopener noreferrer"
+                  rel="nofollow noopener noreferrer"
                   style={{
                     position: "relative",
                     display: "flex",
@@ -1041,11 +1044,11 @@ const Frontpage = () => {
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                       <span style={{ fontSize: 15 }}>🕵️</span>
-                      <span style={{ fontFamily: "'Syne',sans-serif", fontSize: 12, fontWeight: 800, letterSpacing: "0.08em", color: "rgba(167,139,250,0.95)", textTransform: "uppercase" }}>
+                      <span style={{ fontFamily: "var(--font-geist-sans), sans-serif", fontSize: 12, fontWeight: 800, letterSpacing: "0.08em", color: "rgba(167,139,250,0.95)", textTransform: "uppercase" }}>
                         milos-saric.com
                       </span>
                     </div>
-                    <span style={{ fontSize: 8, fontFamily: "'Syne',sans-serif", fontWeight: 800, letterSpacing: "0.18em", textTransform: "uppercase", padding: "2px 7px", borderRadius: 6, background: "rgba(139,92,246,0.15)", border: "1px solid rgba(139,92,246,0.3)", color: "rgba(167,139,250,0.8)" }}>
+                    <span style={{ fontSize: 8, fontFamily: "var(--font-geist-sans), sans-serif", fontWeight: 800, letterSpacing: "0.18em", textTransform: "uppercase", padding: "2px 7px", borderRadius: 6, background: "rgba(139,92,246,0.15)", border: "1px solid rgba(139,92,246,0.3)", color: "rgba(167,139,250,0.8)" }}>
                       Private
                     </span>
                   </div>
@@ -1110,7 +1113,7 @@ const Frontpage = () => {
                       backdropFilter: "blur(12px)",
                     }}
                   >
-                    <div style={{ fontFamily: "'Syne',sans-serif", fontSize: 20, fontWeight: 800, color: "#f1f5f9", lineHeight: 1 }}>{fact.value}</div>
+                    <div style={{ fontFamily: "var(--font-geist-sans), sans-serif", fontSize: 20, fontWeight: 800, color: "#f1f5f9", lineHeight: 1 }}>{fact.value}</div>
                     <div style={{ fontSize: 11, color: "rgba(255,255,255,0.75)", marginTop: 3 }}>{fact.label}</div>
                     <div style={{ fontSize: 10, color: "rgba(99,102,241,0.6)", marginTop: 2, fontStyle: "italic" }}>{fact.sub}</div>
                   </div>
@@ -1195,10 +1198,12 @@ const Frontpage = () => {
                 border: "2px solid rgba(6,182,212,0.4)",
                 background: "rgba(15,23,42,0.9)",
               }}>
-                <img
+                <Image
                   src="/Me.jpg"
                   alt="Milos Saric"
-                  loading="eager"
+                  priority
+                  width={224}
+                  height={224}
                   style={{
                     width: "100%",
                     height: "100%",
@@ -1211,7 +1216,7 @@ const Frontpage = () => {
 
             {/* ── Name ───────────────────────────────────────────────────── */}
             <h1 className="mobile-item-2" style={{
-              fontFamily: "'Syne',sans-serif",
+              fontFamily: "var(--font-geist-sans), sans-serif",
               fontSize: 28,
               fontWeight: 800,
               letterSpacing: "-0.03em",
@@ -1227,7 +1232,7 @@ const Frontpage = () => {
             <div className="mobile-item-3" style={{ display: "flex", flexWrap: "wrap", gap: 6, justifyContent: "center", marginBottom: 14 }}>
               {["ML / AI Engineer", "Data Scientist"].map((role) => (
                 <span key={role} style={{
-                  fontFamily: "'Syne',sans-serif",
+                  fontFamily: "var(--font-geist-sans), sans-serif",
                   fontSize: 11,
                   fontWeight: 700,
                   letterSpacing: "0.06em",
@@ -1348,6 +1353,7 @@ const Frontpage = () => {
                   icon={<GlobeIcon />}
                   accent="purple"
                   badge="Personal"
+                  rel="nofollow noopener noreferrer"
                 />
               </div>
 
@@ -1371,18 +1377,18 @@ const Frontpage = () => {
                     <div style={{ position: "absolute", inset: 0, borderRadius: "50%", background: "rgba(6,182,212,1)", animation: "liveping 1.8s ease-in-out infinite" }} />
                     <div style={{ position: "absolute", inset: 0, borderRadius: "50%", background: "rgba(6,182,212,1)" }} />
                   </div>
-                  <span style={{ fontFamily: "'Syne',sans-serif", fontSize: 9, fontWeight: 800, letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(6,182,212,0.9)" }}>
+                  <span style={{ fontFamily: "var(--font-geist-sans), sans-serif", fontSize: 9, fontWeight: 800, letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(6,182,212,0.9)" }}>
                     Currently building
                   </span>
-                  <span style={{ marginLeft: "auto", fontSize: 8, fontFamily: "'Syne',sans-serif", fontWeight: 800, letterSpacing: "0.12em", textTransform: "uppercase", padding: "2px 7px", borderRadius: 6, background: "rgba(6,182,212,0.12)", border: "1px solid rgba(6,182,212,0.25)", color: "rgba(6,182,212,0.75)" }}>
+                  <span style={{ marginLeft: "auto", fontSize: 8, fontFamily: "var(--font-geist-sans), sans-serif", fontWeight: 800, letterSpacing: "0.12em", textTransform: "uppercase", padding: "2px 7px", borderRadius: 6, background: "rgba(6,182,212,0.12)", border: "1px solid rgba(6,182,212,0.25)", color: "rgba(6,182,212,0.75)" }}>
                     Week 3
                   </span>
                 </div>
 
-                <div style={{ fontFamily: "'Syne',sans-serif", fontSize: 14, fontWeight: 800, color: "#f1f5f9", marginBottom: 3, letterSpacing: "-0.01em", lineHeight: 1.2 }}>
+                <div style={{ fontFamily: "var(--font-geist-sans), sans-serif", fontSize: 14, fontWeight: 800, color: "#f1f5f9", marginBottom: 3, letterSpacing: "-0.01em", lineHeight: 1.2 }}>
                   Creator Operating System
                 </div>
-                <div style={{ fontSize: 10, color: "rgba(6,182,212,0.8)", fontFamily: "'Syne',sans-serif", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: 12 }}>
+                <div style={{ fontSize: 10, color: "rgba(6,182,212,0.8)", fontFamily: "var(--font-geist-sans), sans-serif", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: 12 }}>
                   Cross-Platform Content Intelligence
                 </div>
 
@@ -1415,8 +1421,8 @@ const Frontpage = () => {
                       textAlign: "center",
                     }}>
                       <div style={{ fontSize: 12, marginBottom: 2 }}>{s.emoji}</div>
-                      <div style={{ fontFamily: "'Syne',sans-serif", fontSize: 14, fontWeight: 800, color: "#f1f5f9", lineHeight: 1, letterSpacing: "-0.01em" }}>{s.value}</div>
-                      <div style={{ fontSize: 9, color: "rgba(255,255,255,0.4)", marginTop: 2, fontFamily: "'Syne',sans-serif", letterSpacing: "0.05em" }}>{s.label}</div>
+                      <div style={{ fontFamily: "var(--font-geist-sans), sans-serif", fontSize: 14, fontWeight: 800, color: "#f1f5f9", lineHeight: 1, letterSpacing: "-0.01em" }}>{s.value}</div>
+                      <div style={{ fontSize: 9, color: "rgba(255,255,255,0.4)", marginTop: 2, fontFamily: "var(--font-geist-sans), sans-serif", letterSpacing: "0.05em" }}>{s.label}</div>
                     </div>
                   ))}
                 </div>
@@ -1439,7 +1445,7 @@ const Frontpage = () => {
             {/* ── Mobile footer ──────────────────────────────────────────── */}
             <div style={{ marginTop: 40, display: "flex", alignItems: "center", gap: 8 }}>
               <div style={{ width: 4, height: 4, borderRadius: "50%", background: "rgba(6,182,212,0.6)" }} />
-              <span style={{ fontSize: 10, color: "rgba(255,255,255,0.4)", fontFamily: "'Syne',sans-serif", letterSpacing: "0.1em" }}>
+              <span style={{ fontSize: 10, color: "rgba(255,255,255,0.4)", fontFamily: "var(--font-geist-sans), sans-serif", letterSpacing: "0.1em" }}>
                 Sleep &lt; Deadlines
               </span>
               <div style={{ width: 4, height: 4, borderRadius: "50%", background: "rgba(99,102,241,0.6)" }} />
