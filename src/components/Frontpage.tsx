@@ -475,6 +475,149 @@ const RocketIcon = () => (
   </svg>
 );
 
+const GitHubIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z" />
+  </svg>
+);
+
+const EmailIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="2" y="4" width="20" height="16" rx="3" />
+    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+  </svg>
+);
+
+// ─── Now Section ──────────────────────────────────────────────────────────────
+function NowSection() {
+  const stats = [
+    { value: "2.87M", label: "monthly views", emoji: "👁️" },
+    { value: "68.6K", label: "engagements", emoji: "⚡" },
+    { value: "6.03%", label: "eng. rate", emoji: "🔥" },
+    { value: "43K", label: "shares", emoji: "🚀" },
+  ];
+
+  const features = [
+    { icon: "🧠", text: "AI/NLP + agentic workflows (OpenAI, Hugging Face, Pinecone/FAISS)" },
+    { icon: "📡", text: "Cross-platform intelligence across YouTube & Instagram" },
+    { icon: "🏗️", text: "Modular FastAPI backend + React analytics dashboards" },
+    { icon: "🔐", text: "Secure auth, encrypted credential storage, background collectors" },
+  ];
+
+  return (
+    <div style={{
+      borderRadius: 24,
+      border: "1px solid rgba(6,182,212,0.25)",
+      background: "linear-gradient(135deg,rgba(6,182,212,0.06) 0%,rgba(99,102,241,0.08) 50%,rgba(139,92,246,0.06) 100%)",
+      backdropFilter: "blur(24px) saturate(1.4)",
+      boxShadow: "0 0 0 1px rgba(255,255,255,0.03) inset, 0 20px 60px rgba(2,6,23,0.6), 0 0 40px rgba(6,182,212,0.06)",
+      padding: "28px 32px",
+      position: "relative",
+      overflow: "hidden",
+    }}>
+      {/* Animated pulse dot */}
+      <style>{`
+        @keyframes liveping { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(2.2);opacity:0} }
+        @keyframes nowShimmer { 0%{background-position:200% center} 100%{background-position:-200% center} }
+      `}</style>
+
+      {/* Header */}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <div style={{ position: "relative", width: 10, height: 10 }}>
+            <div style={{ position: "absolute", inset: 0, borderRadius: "50%", background: "rgba(6,182,212,1)", animation: "liveping 1.8s ease-in-out infinite" }} />
+            <div style={{ position: "absolute", inset: 0, borderRadius: "50%", background: "rgba(6,182,212,1)" }} />
+          </div>
+          <span style={{ fontFamily: "'Syne',sans-serif", fontSize: 11, fontWeight: 800, letterSpacing: "0.22em", textTransform: "uppercase", color: "rgba(6,182,212,0.9)" }}>
+            Now
+          </span>
+          <span style={{ fontSize: 10, color: "rgba(255,255,255,0.35)", fontFamily: "'Syne',sans-serif", letterSpacing: "0.1em" }}>
+            · what I&apos;m actually doing at this moment in time
+          </span>
+        </div>
+        <span style={{
+          fontSize: 9,
+          fontFamily: "'Syne',sans-serif",
+          fontWeight: 800,
+          letterSpacing: "0.16em",
+          textTransform: "uppercase",
+          padding: "3px 10px",
+          borderRadius: 8,
+          background: "rgba(6,182,212,0.12)",
+          border: "1px solid rgba(6,182,212,0.3)",
+          color: "rgba(6,182,212,0.8)",
+        }}>
+          Week 3 of rollout
+        </span>
+      </div>
+
+      {/* Main content grid */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: 32, alignItems: "start" }}>
+
+        {/* Left: project description */}
+        <div>
+          <h3 style={{
+            fontFamily: "'Syne',sans-serif",
+            fontSize: 18,
+            fontWeight: 800,
+            letterSpacing: "-0.02em",
+            color: "#f1f5f9",
+            marginBottom: 6,
+            lineHeight: 1.2,
+          }}>
+            Creator Operating System
+          </h3>
+          <p style={{ fontSize: 12, color: "rgba(6,182,212,0.8)", fontFamily: "'Syne',sans-serif", fontWeight: 700, letterSpacing: "0.06em", marginBottom: 16, textTransform: "uppercase" }}>
+            Cross-Platform Content Intelligence
+          </p>
+
+          <div style={{ display: "flex", flexDirection: "column", gap: 9 }}>
+            {features.map((f, i) => (
+              <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+                <span style={{ fontSize: 13, flexShrink: 0, marginTop: 1 }}>{f.icon}</span>
+                <span style={{ fontSize: 12, color: "rgba(255,255,255,0.72)", lineHeight: 1.55 }}>{f.text}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Right: live stats */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, minWidth: 260 }}>
+          {stats.map((s, i) => (
+            <div key={i} style={{
+              padding: "12px 14px",
+              borderRadius: 14,
+              background: "rgba(15,23,42,0.55)",
+              border: "1px solid rgba(255,255,255,0.06)",
+              backdropFilter: "blur(8px)",
+              textAlign: "center",
+            }}>
+              <div style={{ fontSize: 16, marginBottom: 4 }}>{s.emoji}</div>
+              <div style={{ fontFamily: "'Syne',sans-serif", fontSize: 17, fontWeight: 800, color: "#f1f5f9", lineHeight: 1, letterSpacing: "-0.02em" }}>{s.value}</div>
+              <div style={{ fontSize: 10, color: "rgba(255,255,255,0.45)", marginTop: 3, fontFamily: "'Syne',sans-serif", letterSpacing: "0.06em" }}>{s.label}</div>
+            </div>
+          ))}
+          <div style={{
+            gridColumn: "1 / -1",
+            padding: "8px 12px",
+            borderRadius: 10,
+            background: "rgba(99,102,241,0.1)",
+            border: "1px solid rgba(99,102,241,0.2)",
+            textAlign: "center",
+            fontSize: 10,
+            color: "rgba(199,210,254,0.7)",
+            fontFamily: "'Syne',sans-serif",
+            letterSpacing: "0.08em",
+          }}>
+            855 followers · 21,192 likes · 817 comments · 3,524 saves
+          </div>
+        </div>
+
+      </div>
+    </div>
+  );
+}
+
 // ─── Main Frontpage ───────────────────────────────────────────────────────────
 const Frontpage = () => {
   const [mounted, setMounted] = useState(false);
@@ -791,6 +934,18 @@ const Frontpage = () => {
                   accent="indigo"
                   icon={<YoutubeIcon />}
                 />
+                <GalaxyLink
+                  href="https://github.com/saricmilos"
+                  label="GitHub"
+                  accent="purple"
+                  icon={<GitHubIcon />}
+                />
+                <GalaxyLink
+                  href="mailto:milossaric@outlook.com"
+                  label="Email"
+                  accent="cyan"
+                  icon={<EmailIcon />}
+                />
 
                 {/* Thesis link — with extra personality */}
                 <a
@@ -903,6 +1058,9 @@ const Frontpage = () => {
 
             </div>{/* end right column */}
             </div>{/* end top hero grid */}
+
+            {/* ── NOW: Currently building ──────────────────────────────────────── */}
+            <NowSection />
 
             {/* ── BOTTOM: Stack + Quick facts ──────────────────────────────────── */}
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
@@ -1136,6 +1294,26 @@ const Frontpage = () => {
 
               <div className="mobile-item-8">
                 <MobileLink
+                  href="https://github.com/saricmilos"
+                  label="GitHub"
+                  sublabel="@saricmilos"
+                  icon={<GitHubIcon />}
+                  accent="purple"
+                />
+              </div>
+
+              <div className="mobile-item-8">
+                <MobileLink
+                  href="mailto:milossaric@outlook.com"
+                  label="Email"
+                  sublabel="milossaric@outlook.com"
+                  icon={<EmailIcon />}
+                  accent="cyan"
+                />
+              </div>
+
+              <div className="mobile-item-8">
+                <MobileLink
                   href="https://upcommons.upc.edu/server/api/core/bitstreams/67a5f746-ba7f-4f95-a278-d27986893298/content"
                   label="Master's Thesis"
                   sublabel="Proof I once suffered for science 📄"
@@ -1171,6 +1349,77 @@ const Frontpage = () => {
                   accent="purple"
                   badge="Personal"
                 />
+              </div>
+
+              {/* Now section — mobile */}
+              <div style={{ height: 8 }} />
+              <div className="mobile-item-9" style={{ marginBottom: 4 }}>
+                <SectionLabel>Now</SectionLabel>
+              </div>
+
+              <div className="mobile-item-9" style={{
+                width: "100%",
+                padding: "18px 18px",
+                borderRadius: 18,
+                border: "1px solid rgba(6,182,212,0.25)",
+                background: "linear-gradient(135deg,rgba(6,182,212,0.07) 0%,rgba(99,102,241,0.09) 100%)",
+                backdropFilter: "blur(16px)",
+              }}>
+                {/* Live indicator */}
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+                  <div style={{ position: "relative", width: 8, height: 8, flexShrink: 0 }}>
+                    <div style={{ position: "absolute", inset: 0, borderRadius: "50%", background: "rgba(6,182,212,1)", animation: "liveping 1.8s ease-in-out infinite" }} />
+                    <div style={{ position: "absolute", inset: 0, borderRadius: "50%", background: "rgba(6,182,212,1)" }} />
+                  </div>
+                  <span style={{ fontFamily: "'Syne',sans-serif", fontSize: 9, fontWeight: 800, letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(6,182,212,0.9)" }}>
+                    Currently building
+                  </span>
+                  <span style={{ marginLeft: "auto", fontSize: 8, fontFamily: "'Syne',sans-serif", fontWeight: 800, letterSpacing: "0.12em", textTransform: "uppercase", padding: "2px 7px", borderRadius: 6, background: "rgba(6,182,212,0.12)", border: "1px solid rgba(6,182,212,0.25)", color: "rgba(6,182,212,0.75)" }}>
+                    Week 3
+                  </span>
+                </div>
+
+                <div style={{ fontFamily: "'Syne',sans-serif", fontSize: 14, fontWeight: 800, color: "#f1f5f9", marginBottom: 3, letterSpacing: "-0.01em", lineHeight: 1.2 }}>
+                  Creator Operating System
+                </div>
+                <div style={{ fontSize: 10, color: "rgba(6,182,212,0.8)", fontFamily: "'Syne',sans-serif", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: 12 }}>
+                  Cross-Platform Content Intelligence
+                </div>
+
+                <div style={{ display: "flex", flexDirection: "column", gap: 7, marginBottom: 14 }}>
+                  {[
+                    { icon: "🧠", text: "AI/NLP + agentic workflows with OpenAI & Pinecone" },
+                    { icon: "📡", text: "YouTube & Instagram intelligence unified" },
+                    { icon: "🏗️", text: "FastAPI backend + React analytics dashboards" },
+                  ].map((f, i) => (
+                    <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+                      <span style={{ fontSize: 12, flexShrink: 0, marginTop: 1 }}>{f.icon}</span>
+                      <span style={{ fontSize: 11, color: "rgba(255,255,255,0.7)", lineHeight: 1.5 }}>{f.text}</span>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Mini stats grid */}
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}>
+                  {[
+                    { value: "2.87M", label: "monthly views", emoji: "👁️" },
+                    { value: "6.03%", label: "eng. rate", emoji: "🔥" },
+                    { value: "43K", label: "shares", emoji: "🚀" },
+                    { value: "68.6K", label: "engagements", emoji: "⚡" },
+                  ].map((s, i) => (
+                    <div key={i} style={{
+                      padding: "9px 10px",
+                      borderRadius: 10,
+                      background: "rgba(15,23,42,0.5)",
+                      border: "1px solid rgba(255,255,255,0.05)",
+                      textAlign: "center",
+                    }}>
+                      <div style={{ fontSize: 12, marginBottom: 2 }}>{s.emoji}</div>
+                      <div style={{ fontFamily: "'Syne',sans-serif", fontSize: 14, fontWeight: 800, color: "#f1f5f9", lineHeight: 1, letterSpacing: "-0.01em" }}>{s.value}</div>
+                      <div style={{ fontSize: 9, color: "rgba(255,255,255,0.4)", marginTop: 2, fontFamily: "'Syne',sans-serif", letterSpacing: "0.05em" }}>{s.label}</div>
+                    </div>
+                  ))}
+                </div>
               </div>
 
               {/* Stack chips */}
