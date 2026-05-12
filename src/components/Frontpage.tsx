@@ -566,6 +566,18 @@ const Frontpage = () => {
         .desktop-only { display: flex; }
         .mobile-only  { display: none; }
 
+        /* ── Hide desktop FX on mobile ── */
+        @media (max-width: 768px) {
+          .desktop-fx { display: none !important; }
+        }
+
+        /* ── Mobile purple background ── */
+        @media (max-width: 768px) {
+          .main-bg {
+            background: linear-gradient(160deg, #1a0033 0%, #3b0073 30%, #6b00cc 60%, #9b30ff 85%, #bf5fff 100%) !important;
+          }
+        }
+
         /* ── Mobile breakpoint ── */
         @media (max-width: 768px) {
           .desktop-only { display: none !important; }
@@ -584,17 +596,17 @@ const Frontpage = () => {
         .mobile-item-9 { animation: mobileFadeUp 0.6s 0.9s both ease; }
       `}</style>
 
-      <main style={{ fontFamily: "'DM Sans',sans-serif", minHeight: "100vh", position: "relative", overflow: "hidden", background: "#020817" }}>
+      <main className="main-bg" style={{ fontFamily: "'DM Sans',sans-serif", minHeight: "100vh", position: "relative", overflow: "hidden", background: "#020817" }}>
 
         {/* ── Star canvas ─────────────────────────────────────────────────── */}
-        <CassiopeiaStars className="absolute inset-0 h-full w-full" />
+        <CassiopeiaStars className="desktop-fx absolute inset-0 h-full w-full" />
 
         {/* ── Colour orbs ─────────────────────────────────────────────────── */}
-        <Orbs />
+        <div className="desktop-fx"><Orbs /></div>
 
         {/* ── Blueprint grid ──────────────────────────────────────────────── */}
         <div
-          className="pointer-events-none absolute inset-0"
+          className="desktop-fx pointer-events-none absolute inset-0"
           style={{
             backgroundImage: "linear-gradient(rgba(99,102,241,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(99,102,241,0.04) 1px,transparent 1px)",
             backgroundSize: "60px 60px",
@@ -603,14 +615,34 @@ const Frontpage = () => {
 
         {/* ── Bottom vignette ─────────────────────────────────────────────── */}
         <div
-          className="pointer-events-none absolute inset-0"
+          className="desktop-fx pointer-events-none absolute inset-0"
           style={{ background: "linear-gradient(to top,rgba(2,8,23,0.92) 0%,rgba(2,8,23,0.5) 35%,transparent 65%)" }}
         />
 
         {/* ── Breathing center glow ───────────────────────────────────────── */}
         <div
-          className="glow-pulse pointer-events-none absolute inset-0"
+          className="glow-pulse desktop-fx pointer-events-none absolute inset-0"
           style={{ background: "radial-gradient(ellipse 65% 50% at 50% 40%,rgba(99,102,241,0.1),transparent 70%)" }}
+        />
+
+        {/* ── Mobile purple top glow ──────────────────────────────────────── */}
+        <div
+          className="pointer-events-none absolute inset-0"
+          style={{
+            display: "none",
+          }}
+        />
+        <style>{`
+          @media (max-width: 768px) {
+            .mobile-top-glow { display: block !important; }
+          }
+        `}</style>
+        <div
+          className="mobile-top-glow pointer-events-none absolute inset-0"
+          style={{
+            display: "none",
+            background: "radial-gradient(ellipse 80% 40% at 50% 0%, rgba(191,95,255,0.35), transparent 70%)",
+          }}
         />
 
         {/* ════════════════════════════════════════════════════════════════════
