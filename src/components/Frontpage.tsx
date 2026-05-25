@@ -433,23 +433,9 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 }
 
 // ─── SVG Icons ────────────────────────────────────────────────────────────────
-const InstagramIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
-    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
-  </svg>
-);
-
-const TikTokIcon = () => (
+const LinkedInIcon = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-    <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.3 6.3 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.19 8.19 0 0 0 4.81 1.55V6.8a4.85 4.85 0 0 1-1.04-.11z" />
-  </svg>
-);
-
-const YoutubeIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+    <path d="M20.45 20.45h-3.56v-5.57c0-1.33-.03-3.04-1.86-3.04-1.86 0-2.14 1.45-2.14 2.94v5.67H9.33V9h3.42v1.56h.05c.48-.9 1.64-1.86 3.38-1.86 3.61 0 4.27 2.37 4.27 5.46v6.29zM5.31 7.44a2.07 2.07 0 1 1 0-4.14 2.07 2.07 0 0 1 0 4.14zm1.78 13.01H3.53V9h3.56v11.45z" />
   </svg>
 );
 
@@ -458,14 +444,6 @@ const ThesisIcon = () => (
     <path d="M12 2L2 7l10 5 10-5-10-5z" />
     <path d="M2 17l10 5 10-5" />
     <path d="M2 12l10 5 10-5" />
-  </svg>
-);
-
-const GlobeIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="12" cy="12" r="10" />
-    <line x1="2" y1="12" x2="22" y2="12" />
-    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
   </svg>
 );
 
@@ -920,22 +898,10 @@ const Frontpage = () => {
 
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
                 <GalaxyLink
-                  href="https://instagram.com/sariccmilos"
-                  label="Instagram"
-                  accent="pink"
-                  icon={<InstagramIcon />}
-                />
-                <GalaxyLink
-                  href="https://tiktok.com/@sariccmilos"
-                  label="TikTok"
-                  accent="purple"
-                  icon={<TikTokIcon />}
-                />
-                <GalaxyLink
-                  href="https://youtube.com/@saricmilos"
-                  label="YouTube"
+                  href="https://www.linkedin.com/in/milos-saric-753772237/"
+                  label="LinkedIn"
                   accent="indigo"
-                  icon={<YoutubeIcon />}
+                  icon={<LinkedInIcon />}
                 />
                 <GalaxyLink
                   href="https://github.com/saricmilos"
@@ -1022,40 +988,6 @@ const Frontpage = () => {
                   </span>
                 </a>
 
-                {/* Personal site — the real one */}
-                <a
-                  href="https://milos-saric.com"
-                  target="_blank"
-                  rel="nofollow noopener noreferrer"
-                  style={{
-                    position: "relative",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: 4,
-                    padding: "12px 16px",
-                    borderRadius: 16,
-                    border: "1px solid rgba(139,92,246,0.4)",
-                    background: "rgba(139,92,246,0.07)",
-                    backdropFilter: "blur(12px)",
-                    transition: "all 0.25s cubic-bezier(0.22,1,0.36,1)",
-                    textDecoration: "none",
-                  }}
-                >
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <span style={{ fontSize: 15 }}>🕵️</span>
-                      <span style={{ fontFamily: "var(--font-geist-sans), sans-serif", fontSize: 12, fontWeight: 800, letterSpacing: "0.08em", color: "rgba(167,139,250,0.95)", textTransform: "uppercase" }}>
-                        milos-saric.com
-                      </span>
-                    </div>
-                    <span style={{ fontSize: 8, fontFamily: "var(--font-geist-sans), sans-serif", fontWeight: 800, letterSpacing: "0.18em", textTransform: "uppercase", padding: "2px 7px", borderRadius: 6, background: "rgba(139,92,246,0.15)", border: "1px solid rgba(139,92,246,0.3)", color: "rgba(167,139,250,0.8)" }}>
-                      Private
-                    </span>
-                  </div>
-                  <span style={{ fontSize: 10, color: "rgba(255,255,255,0.8)", lineHeight: 1.4, paddingLeft: 23 }}>
-                    The unfiltered version. Enter at own risk 👀
-                  </span>
-                </a>
                 </div>
               </div>
 
@@ -1269,30 +1201,10 @@ const Frontpage = () => {
 
               <div className="mobile-item-5">
                 <MobileLink
-                  href="https://instagram.com/sariccmilos"
-                  label="Instagram"
-                  sublabel="@sariccmilos"
-                  icon={<InstagramIcon />}
-                  accent="pink"
-                />
-              </div>
-
-              <div className="mobile-item-6">
-                <MobileLink
-                  href="https://tiktok.com/@sariccmilos"
-                  label="TikTok"
-                  sublabel="@sariccmilos"
-                  icon={<TikTokIcon />}
-                  accent="purple"
-                />
-              </div>
-
-              <div className="mobile-item-7">
-                <MobileLink
-                  href="https://youtube.com/@saricmilos"
-                  label="YouTube"
-                  sublabel="@saricmilos"
-                  icon={<YoutubeIcon />}
+                  href="https://www.linkedin.com/in/milos-saric-753772237/"
+                  label="LinkedIn"
+                  sublabel="milos-saric-753772237"
+                  icon={<LinkedInIcon />}
                   accent="indigo"
                 />
               </div>
@@ -1342,18 +1254,6 @@ const Frontpage = () => {
                   icon={<RocketIcon />}
                   accent="cyan"
                   badge="Business"
-                />
-              </div>
-
-              <div className="mobile-item-9">
-                <MobileLink
-                  href="https://milos-saric.com"
-                  label="milos-saric.com"
-                  sublabel="The unfiltered version. Enter at own risk 👀"
-                  icon={<GlobeIcon />}
-                  accent="purple"
-                  badge="Personal"
-                  rel="nofollow noopener noreferrer"
                 />
               </div>
 
