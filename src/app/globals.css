@@ -1,8 +1,70 @@
 @import "tailwindcss";
 
+/* Light and dark mode. <html data-theme> is set before first paint by the
+   script in layout.tsx and switched by ThemeToggle; light is the default for
+   first-time visitors, then their saved choice. The dark set sits on :root
+   and [data-theme="light"] overrides it. Tailwind's dark: variant follows
+   the attribute, not the OS setting. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
 :root {
+  color-scheme: dark;
+  --background: #0a0a0a;
+  --foreground: #ededed;
+
+  /* Home page (Frontpage.tsx). RGB triplets are read as rgb(var(--x) / alpha). */
+  --fp-bg: #020817;
+  --fp-heading: 241 245 249;
+  --fp-fg: 255 255 255;
+  --fp-indigo-ink: 199 210 254;
+  --fp-purple-ink: 221 214 254;
+  --fp-cyan-ink: 224 249 255;
+  --fp-pink-ink: 251 207 232;
+  --fp-cyan: 6 182 212;
+  --fp-violet: 167 139 250;
+  --fp-divider: 51 65 85;
+  --fp-ink-k: 1;
+  --fp-shade: 0 0 0;
+  --fp-shade-k: 1;
+  --fp-vignette: linear-gradient(to top, rgba(2, 8, 23, 0.92) 0%, rgba(2, 8, 23, 0.5) 35%, transparent 65%);
+  --fp-photo-bg: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.9));
+  --fp-photo-fade: rgba(2, 8, 23, 0.6);
+  --fp-mobile-bg: linear-gradient(160deg, #1a0033 0%, #3b0073 30%, #6b00cc 60%, #9b30ff 85%, #bf5fff 100%);
+  --fp-mobile-glow: rgba(191, 95, 255, 0.35);
+  /* Star canvas, read by CassiopeiaStars as rgba(<triplet>, alpha) */
+  --fp-star: 255, 255, 255;
+  --fp-star-glow: 220, 240, 255;
+  --fp-star-trail: 186, 220, 255;
+  --fp-constellation: 147, 197, 253;
+}
+
+[data-theme="light"] {
+  color-scheme: light;
   --background: #ffffff;
   --foreground: #171717;
+
+  --fp-bg: #f5f7ff;
+  --fp-heading: 15 23 42;
+  --fp-fg: 15 23 42;
+  --fp-indigo-ink: 55 48 163;
+  --fp-purple-ink: 91 33 182;
+  --fp-cyan-ink: 22 78 99;
+  --fp-pink-ink: 157 23 77;
+  --fp-cyan: 21 94 117;
+  --fp-violet: 109 40 217;
+  --fp-divider: 148 163 184;
+  --fp-ink-k: 1.5;
+  --fp-shade: 15 23 42;
+  --fp-shade-k: 0.22;
+  --fp-vignette: linear-gradient(to top, rgba(245, 247, 255, 0.92) 0%, rgba(245, 247, 255, 0.5) 35%, transparent 65%);
+  --fp-photo-bg: linear-gradient(135deg, #eef2ff, #e0e7ff);
+  --fp-photo-fade: rgba(15, 23, 42, 0.15);
+  --fp-mobile-bg: linear-gradient(160deg, #faf5ff 0%, #f3e8ff 30%, #e9d5ff 60%, #ddd6fe 85%, #e0e7ff 100%);
+  --fp-mobile-glow: rgba(191, 95, 255, 0.2);
+  --fp-star: 67, 56, 202;
+  --fp-star-glow: 99, 102, 241;
+  --fp-star-trail: 129, 140, 248;
+  --fp-constellation: 99, 102, 241;
 }
 
 @theme inline {
@@ -10,13 +72,6 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {

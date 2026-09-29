@@ -9,9 +9,9 @@ export const metadata: Metadata = {
 
 export default function NotesPage() {
   return (
-    <main className="mx-auto w-full max-w-4xl px-6 py-16 text-slate-100">
+    <main className="mx-auto w-full max-w-4xl px-6 py-16 text-slate-900 dark:text-slate-100">
       <h1 className="text-4xl font-semibold tracking-tight">Notes</h1>
-      <p className="mt-6 leading-8 text-slate-300">
+      <p className="mt-6 leading-8 text-slate-600 dark:text-slate-300">
         This section is reserved for practical notes on machine learning engineering, experimentation lessons,
         and production AI implementation patterns.
       </p>

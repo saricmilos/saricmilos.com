@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import ThemeToggle from "@/components/ThemeToggle";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -16,6 +17,10 @@ const siteUrl = "https://www.saricmilos.com";
 const defaultTitle = "Milos Saric | ML / AI Engineer";
 const defaultDescription =
   "Milos Saric is an ML/AI Engineer and Data Scientist building production AI systems, analytics platforms, and applied machine learning products.";
+
+// Runs before first paint: first-time visitors get light, anyone who picked a
+// theme with ThemeToggle gets their saved choice, with no flash of the other one.
+const themeScript = `(function(){var t="light";try{if(localStorage.getItem("theme")==="dark")t="dark"}catch(e){}document.documentElement.dataset.theme=t})()`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -75,9 +80,17 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      data-theme="light"
+      suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
+      <body className="min-h-full flex flex-col">
+        {children}
+        <ThemeToggle />
+      </body>
     </html>
   );
 }

@@ -3,6 +3,13 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 
+// Theme-aware colours: the tokens are in app/globals.css, one set per theme.
+// ink() keeps each colour's own alpha (light mode strengthens it a little);
+// shade() is a drop-shadow colour, much softer in light mode.
+const ink = (token: string, alpha = 1) =>
+  `rgb(var(--fp-${token}) / min(1, calc(${alpha} * var(--fp-ink-k))))`;
+const shade = (alpha: number) => `rgb(var(--fp-shade) / calc(${alpha} * var(--fp-shade-k)))`;
+
 // ─── Cassiopeia Stars Canvas ──────────────────────────────────────────────────
 function CassiopeiaStars({ className = "absolute inset-0 h-full w-full" }: { className?: string }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -12,6 +19,16 @@ function CassiopeiaStars({ className = "absolute inset-0 h-full w-full" }: { cla
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
+
+    // Star colours come from the theme tokens and are re-read when the theme changes.
+    const readPalette = () => {
+      const css = getComputedStyle(document.documentElement);
+      const v = (name: string) => css.getPropertyValue(name).trim();
+      return { star: v("--fp-star"), glow: v("--fp-star-glow"), trail: v("--fp-star-trail"), line: v("--fp-constellation") };
+    };
+    let palette = readPalette();
+    const themeObserver = new MutationObserver(() => { palette = readPalette(); });
+    themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
 
     const setCanvasSize = () => {
       canvas.width = window.innerWidth;
@@ -80,11 +97,11 @@ function CassiopeiaStars({ className = "absolute inset-0 h-full w-full" }: { cla
         const tw = Math.sin(time * star.twinkleSpeed * 60 + star.twinklePhase) * 0.28 + 0.72;
         ctx.beginPath();
         ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255,255,255,${star.opacity * tw})`;
+        ctx.fillStyle = `rgba(${palette.star},${star.opacity * tw})`;
         ctx.fill();
       });
 
-      ctx.strokeStyle = "rgba(147,197,253,0.32)"; ctx.lineWidth = 1.2;
+      ctx.strokeStyle = `rgba(${palette.line},0.32)`; ctx.lineWidth = 1.2;
       ctx.beginPath();
       cassiopeia.forEach((s, i) => i === 0 ? ctx.moveTo(s.x, s.y) : ctx.lineTo(s.x, s.y));
       ctx.stroke();
@@ -92,13 +109,13 @@ function CassiopeiaStars({ className = "absolute inset-0 h-full w-full" }: { cla
       cassiopeia.forEach((star, idx) => {
         const pulse = Math.sin(time * 1.8 + idx * 1.1) * 0.18 + 0.82;
         const g = ctx.createRadialGradient(star.x, star.y, 0, star.x, star.y, 14);
-        g.addColorStop(0, `rgba(147,197,253,${0.85 * pulse})`);
-        g.addColorStop(0.45, `rgba(147,197,253,${0.3 * pulse})`);
-        g.addColorStop(1, "rgba(147,197,253,0)");
+        g.addColorStop(0, `rgba(${palette.line},${0.85 * pulse})`);
+        g.addColorStop(0.45, `rgba(${palette.line},${0.3 * pulse})`);
+        g.addColorStop(1, `rgba(${palette.line},0)`);
         ctx.beginPath(); ctx.arc(star.x, star.y, 14, 0, Math.PI * 2);
         ctx.fillStyle = g; ctx.fill();
         ctx.beginPath(); ctx.arc(star.x, star.y, 2.2 * pulse, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255,255,255,${pulse})`; ctx.fill();
+        ctx.fillStyle = `rgba(${palette.star},${pulse})`; ctx.fill();
       });
 
       const now = performance.now();
@@ -121,26 +138,26 @@ function CassiopeiaStars({ className = "absolute inset-0 h-full w-full" }: { cla
         const tx = hx - Math.cos(s.angle) * s.length;
         const ty = hy - Math.sin(s.angle) * s.length;
         const grad = ctx.createLinearGradient(tx, ty, hx, hy);
-        grad.addColorStop(0, "rgba(147,197,253,0)");
-        grad.addColorStop(0.55, `rgba(186,220,255,${0.45 * alpha})`);
-        grad.addColorStop(1, `rgba(255,255,255,${0.95 * alpha})`);
+        grad.addColorStop(0, `rgba(${palette.line},0)`);
+        grad.addColorStop(0.55, `rgba(${palette.trail},${0.45 * alpha})`);
+        grad.addColorStop(1, `rgba(${palette.star},${0.95 * alpha})`);
         ctx.beginPath(); ctx.moveTo(tx, ty); ctx.lineTo(hx, hy);
         ctx.strokeStyle = grad; ctx.lineWidth = 1.8; ctx.lineCap = "round"; ctx.stroke();
         const gr = 5 + (1 - progress) * 5;
         const gg = ctx.createRadialGradient(hx, hy, 0, hx, hy, gr);
-        gg.addColorStop(0, `rgba(220,240,255,${0.9 * alpha})`);
-        gg.addColorStop(0.4, `rgba(147,197,253,${0.35 * alpha})`);
-        gg.addColorStop(1, "rgba(147,197,253,0)");
+        gg.addColorStop(0, `rgba(${palette.glow},${0.9 * alpha})`);
+        gg.addColorStop(0.4, `rgba(${palette.line},${0.35 * alpha})`);
+        gg.addColorStop(1, `rgba(${palette.line},0)`);
         ctx.beginPath(); ctx.arc(hx, hy, gr, 0, Math.PI * 2); ctx.fillStyle = gg; ctx.fill();
         ctx.beginPath(); ctx.arc(hx, hy, 1.1, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255,255,255,${alpha})`; ctx.fill();
+        ctx.fillStyle = `rgba(${palette.star},${alpha})`; ctx.fill();
       }
 
       animFrame = requestAnimationFrame(animate);
     };
 
     animate();
-    return () => { window.removeEventListener("resize", setCanvasSize); cancelAnimationFrame(animFrame); };
+    return () => { window.removeEventListener("resize", setCanvasSize); cancelAnimationFrame(animFrame); themeObserver.disconnect(); };
   }, []);
 
   return <canvas ref={canvasRef} className={className} />;
@@ -175,26 +192,26 @@ function GalaxyLink({
     indigo: {
       border: ["rgba(99,102,241,0.5)", "rgba(99,102,241,0.22)"],
       bg: ["rgba(99,102,241,0.15)", "rgba(99,102,241,0.07)"],
-      text: ["#c7d2fe", "rgba(199,210,254,0.7)"],
-      glow: "0 0 22px rgba(99,102,241,0.3), 0 4px 16px rgba(0,0,0,0.45)",
+      text: [ink("indigo-ink"), ink("indigo-ink", 0.7)],
+      glow: `0 0 22px rgba(99,102,241,0.3), 0 4px 16px ${shade(0.45)}`,
     },
     cyan: {
       border: ["rgba(6,182,212,0.9)", "rgba(6,182,212,0.45)"],
       bg: ["rgba(6,182,212,0.18)", "rgba(6,182,212,0.08)"],
-      text: ["#e0f9ff", "rgba(224,249,255,0.8)"],
-      glow: "0 0 24px rgba(6,182,212,0.35), 0 4px 16px rgba(0,0,0,0.4)",
+      text: [ink("cyan-ink"), ink("cyan-ink", 0.8)],
+      glow: `0 0 24px rgba(6,182,212,0.35), 0 4px 16px ${shade(0.4)}`,
     },
     purple: {
       border: ["rgba(139,92,246,0.7)", "rgba(139,92,246,0.3)"],
       bg: ["rgba(139,92,246,0.18)", "rgba(139,92,246,0.07)"],
-      text: ["#ddd6fe", "rgba(221,214,254,0.7)"],
-      glow: "0 0 22px rgba(139,92,246,0.3), 0 4px 16px rgba(0,0,0,0.45)",
+      text: [ink("purple-ink"), ink("purple-ink", 0.7)],
+      glow: `0 0 22px rgba(139,92,246,0.3), 0 4px 16px ${shade(0.45)}`,
     },
     pink: {
       border: ["rgba(236,72,153,0.7)", "rgba(236,72,153,0.3)"],
       bg: ["rgba(236,72,153,0.15)", "rgba(236,72,153,0.06)"],
-      text: ["#fbcfe8", "rgba(251,207,232,0.7)"],
-      glow: "0 0 22px rgba(236,72,153,0.3), 0 4px 16px rgba(0,0,0,0.45)",
+      text: [ink("pink-ink"), ink("pink-ink", 0.7)],
+      glow: `0 0 22px rgba(236,72,153,0.3), 0 4px 16px ${shade(0.45)}`,
     },
   };
 
@@ -223,7 +240,7 @@ function GalaxyLink({
         fontWeight: 700,
         letterSpacing: "0.06em",
         cursor: "pointer",
-        boxShadow: hovered ? c.glow : "0 2px 12px rgba(0,0,0,0.35)",
+        boxShadow: hovered ? c.glow : `0 2px 12px ${shade(0.35)}`,
         backdropFilter: "blur(12px)",
         transition: "all 0.25s cubic-bezier(0.22,1,0.36,1)",
         textDecoration: "none",
@@ -268,42 +285,42 @@ function MobileLink({
     indigo: {
       border: pressed ? "rgba(99,102,241,0.6)" : "rgba(99,102,241,0.25)",
       bg: pressed ? "rgba(99,102,241,0.18)" : "rgba(99,102,241,0.08)",
-      text: "#c7d2fe",
-      sub: "rgba(199,210,254,0.6)",
+      text: ink("indigo-ink"),
+      sub: ink("indigo-ink", 0.6),
       badgeBg: "rgba(99,102,241,0.15)",
       badgeBorder: "rgba(99,102,241,0.35)",
-      badgeText: "rgba(199,210,254,0.9)",
-      glow: pressed ? "0 0 28px rgba(99,102,241,0.25)" : "0 2px 12px rgba(0,0,0,0.4)",
+      badgeText: ink("indigo-ink", 0.9),
+      glow: pressed ? "0 0 28px rgba(99,102,241,0.25)" : `0 2px 12px ${shade(0.4)}`,
     },
     cyan: {
       border: pressed ? "rgba(6,182,212,0.8)" : "rgba(6,182,212,0.3)",
       bg: pressed ? "rgba(6,182,212,0.18)" : "rgba(6,182,212,0.08)",
-      text: "#e0f9ff",
-      sub: "rgba(224,249,255,0.6)",
+      text: ink("cyan-ink"),
+      sub: ink("cyan-ink", 0.6),
       badgeBg: "rgba(6,182,212,0.15)",
       badgeBorder: "rgba(6,182,212,0.35)",
-      badgeText: "rgba(6,182,212,0.95)",
-      glow: pressed ? "0 0 28px rgba(6,182,212,0.25)" : "0 2px 12px rgba(0,0,0,0.4)",
+      badgeText: ink("cyan", 0.95),
+      glow: pressed ? "0 0 28px rgba(6,182,212,0.25)" : `0 2px 12px ${shade(0.4)}`,
     },
     purple: {
       border: pressed ? "rgba(139,92,246,0.7)" : "rgba(139,92,246,0.25)",
       bg: pressed ? "rgba(139,92,246,0.18)" : "rgba(139,92,246,0.07)",
-      text: "#ddd6fe",
-      sub: "rgba(221,214,254,0.6)",
+      text: ink("purple-ink"),
+      sub: ink("purple-ink", 0.6),
       badgeBg: "rgba(139,92,246,0.15)",
       badgeBorder: "rgba(139,92,246,0.35)",
-      badgeText: "rgba(167,139,250,0.9)",
-      glow: pressed ? "0 0 28px rgba(139,92,246,0.25)" : "0 2px 12px rgba(0,0,0,0.4)",
+      badgeText: ink("violet", 0.9),
+      glow: pressed ? "0 0 28px rgba(139,92,246,0.25)" : `0 2px 12px ${shade(0.4)}`,
     },
     pink: {
       border: pressed ? "rgba(236,72,153,0.7)" : "rgba(236,72,153,0.25)",
       bg: pressed ? "rgba(236,72,153,0.16)" : "rgba(236,72,153,0.06)",
-      text: "#fbcfe8",
-      sub: "rgba(251,207,232,0.6)",
+      text: ink("pink-ink"),
+      sub: ink("pink-ink", 0.6),
       badgeBg: "rgba(236,72,153,0.15)",
       badgeBorder: "rgba(236,72,153,0.35)",
-      badgeText: "rgba(251,207,232,0.9)",
-      glow: pressed ? "0 0 28px rgba(236,72,153,0.25)" : "0 2px 12px rgba(0,0,0,0.4)",
+      badgeText: ink("pink-ink", 0.9),
+      glow: pressed ? "0 0 28px rgba(236,72,153,0.25)" : `0 2px 12px ${shade(0.4)}`,
     },
   };
 
@@ -383,7 +400,7 @@ function MobileLink({
           color: c.badgeText,
         }}>{badge}</span>
       )}
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={c.text} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, opacity: 0.5 }}>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, opacity: 0.5, color: c.text }}>
         <path d="M7 17L17 7M17 7H7M17 7v10" />
       </svg>
     </a>
@@ -395,7 +412,7 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
       <div style={{ flex: 1, height: 1, background: "rgba(99,102,241,0.2)" }} />
-      <span style={{ fontFamily: "var(--font-geist-sans), sans-serif", fontSize: 9, fontWeight: 800, letterSpacing: "0.28em", textTransform: "uppercase", color: "rgba(255,255,255,0.85)" }}>
+      <span style={{ fontFamily: "var(--font-geist-sans), sans-serif", fontSize: 9, fontWeight: 800, letterSpacing: "0.28em", textTransform: "uppercase", color: ink("fg", 0.85) }}>
         {children}
       </span>
       <div style={{ flex: 1, height: 1, background: "rgba(99,102,241,0.2)" }} />
@@ -529,7 +546,7 @@ const Frontpage = () => {
         /* ── Mobile purple background ── */
         @media (max-width: 768px) {
           .main-bg {
-            background: linear-gradient(160deg, #1a0033 0%, #3b0073 30%, #6b00cc 60%, #9b30ff 85%, #bf5fff 100%) !important;
+            background: var(--fp-mobile-bg) !important;
           }
         }
 
@@ -551,7 +568,7 @@ const Frontpage = () => {
         .mobile-item-9 { animation: mobileFadeUp 0.6s 0.9s both ease; }
       `}</style>
 
-      <main className="main-bg" style={{ fontFamily: "var(--font-geist-sans), sans-serif", minHeight: "100vh", position: "relative", overflow: "hidden", background: "#020817" }}>
+      <main className="main-bg" style={{ fontFamily: "var(--font-geist-sans), sans-serif", minHeight: "100vh", position: "relative", overflow: "hidden", background: "var(--fp-bg)" }}>
 
         {/* ── Star canvas ─────────────────────────────────────────────────── */}
         <CassiopeiaStars className="desktop-fx absolute inset-0 h-full w-full" />
@@ -571,7 +588,7 @@ const Frontpage = () => {
         {/* ── Bottom vignette ─────────────────────────────────────────────── */}
         <div
           className="desktop-fx pointer-events-none absolute inset-0"
-          style={{ background: "linear-gradient(to top,rgba(2,8,23,0.92) 0%,rgba(2,8,23,0.5) 35%,transparent 65%)" }}
+          style={{ background: "var(--fp-vignette)" }}
         />
 
         {/* ── Breathing center glow ───────────────────────────────────────── */}
@@ -596,7 +613,7 @@ const Frontpage = () => {
           className="mobile-top-glow pointer-events-none absolute inset-0"
           style={{
             display: "none",
-            background: "radial-gradient(ellipse 80% 40% at 50% 0%, rgba(191,95,255,0.35), transparent 70%)",
+            background: "radial-gradient(ellipse 80% 40% at 50% 0%, var(--fp-mobile-glow), transparent 70%)",
           }}
         />
 
@@ -640,9 +657,9 @@ const Frontpage = () => {
                   borderRadius: 24,
                   overflow: "hidden",
                   border: "1px solid rgba(6,182,212,0.35)",
-                  background: "linear-gradient(135deg,rgba(15,23,42,0.9),rgba(30,41,59,0.9))",
+                  background: "var(--fp-photo-bg)",
                   position: "relative",
-                  boxShadow: "0 0 60px rgba(99,102,241,0.18), 0 30px 80px rgba(2,6,23,0.85)",
+                  boxShadow: `0 0 60px rgba(99,102,241,0.18), 0 30px 80px ${shade(0.85)}`,
                 }}>
                   {!photoLoaded && (
                     <div style={{
@@ -678,7 +695,7 @@ const Frontpage = () => {
                   {/* Subtle bottom fade on photo */}
                   <div style={{
                     position: "absolute", bottom: 0, left: 0, right: 0, height: 100,
-                    background: "linear-gradient(to top, rgba(2,8,23,0.6), transparent)",
+                    background: "linear-gradient(to top, var(--fp-photo-fade), transparent)",
                     pointerEvents: "none",
                   }} />
                 </div>
@@ -694,7 +711,7 @@ const Frontpage = () => {
                     fontSize: "clamp(32px,4.5vw,54px)",
                     fontWeight: 800,
                     letterSpacing: "-0.03em",
-                    color: "#f1f5f9",
+                    color: ink("heading"),
                     lineHeight: 1.05,
                     marginBottom: 10,
                   }}>
@@ -712,14 +729,14 @@ const Frontpage = () => {
                         borderRadius: 20,
                         background: "rgba(99,102,241,0.12)",
                         border: "1px solid rgba(99,102,241,0.3)",
-                        color: "rgba(199,210,254,0.9)",
+                        color: ink("indigo-ink", 0.9),
                       }}>
                         {role}
                       </span>
                     ))}
                   </div>
 
-                  <p style={{ fontSize: 15, color: "rgba(255,255,255,0.85)", lineHeight: 1.7, maxWidth: 440 }}>
+                  <p style={{ fontSize: 15, color: ink("fg", 0.85), lineHeight: 1.7, maxWidth: 440 }}>
                     I teach machines to think, occasionally wonder if they&apos;re judging me back, and ship things that actually work — not just in notebooks.
                   </p>
                 </div>
@@ -769,18 +786,18 @@ const Frontpage = () => {
                 >
                   <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                     <ThesisIcon />
-                    <span style={{ fontFamily: "var(--font-geist-sans), sans-serif", fontSize: 12, fontWeight: 800, letterSpacing: "0.08em", color: "rgba(6,182,212,0.9)", textTransform: "uppercase" }}>
+                    <span style={{ fontFamily: "var(--font-geist-sans), sans-serif", fontSize: 12, fontWeight: 800, letterSpacing: "0.08em", color: ink("cyan", 0.9), textTransform: "uppercase" }}>
                       Master&apos;s Thesis
                     </span>
                   </div>
-                  <span style={{ fontSize: 10, color: "rgba(255,255,255,0.8)", lineHeight: 1.4, paddingLeft: 24 }}>
+                  <span style={{ fontSize: 10, color: ink("fg", 0.8), lineHeight: 1.4, paddingLeft: 24 }}>
                     Proof that I once suffered for science 📄✨
                   </span>
                 </a>
                 </div>
 
                 {/* Divider */}
-                <div style={{ height: 1, background: "rgba(51,65,85,0.5)", margin: "4px 0" }} />
+                <div style={{ height: 1, background: ink("divider", 0.5), margin: "4px 0" }} />
 
                 {/* Project links row */}
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
@@ -807,15 +824,15 @@ const Frontpage = () => {
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                       <span style={{ fontSize: 15 }}>🚀</span>
-                      <span style={{ fontFamily: "var(--font-geist-sans), sans-serif", fontSize: 12, fontWeight: 800, letterSpacing: "0.08em", color: "rgba(6,182,212,0.95)", textTransform: "uppercase" }}>
+                      <span style={{ fontFamily: "var(--font-geist-sans), sans-serif", fontSize: 12, fontWeight: 800, letterSpacing: "0.08em", color: ink("cyan", 0.95), textTransform: "uppercase" }}>
                         Cassiopeia AI
                       </span>
                     </div>
-                    <span style={{ fontSize: 8, fontFamily: "var(--font-geist-sans), sans-serif", fontWeight: 800, letterSpacing: "0.18em", textTransform: "uppercase", padding: "2px 7px", borderRadius: 6, background: "rgba(6,182,212,0.15)", border: "1px solid rgba(6,182,212,0.3)", color: "rgba(6,182,212,0.8)" }}>
+                    <span style={{ fontSize: 8, fontFamily: "var(--font-geist-sans), sans-serif", fontWeight: 800, letterSpacing: "0.18em", textTransform: "uppercase", padding: "2px 7px", borderRadius: 6, background: "rgba(6,182,212,0.15)", border: "1px solid rgba(6,182,212,0.3)", color: ink("cyan", 0.8) }}>
                       Business
                     </span>
                   </div>
-                  <span style={{ fontSize: 10, color: "rgba(255,255,255,0.8)", lineHeight: 1.4, paddingLeft: 23 }}>
+                  <span style={{ fontSize: 10, color: ink("fg", 0.8), lineHeight: 1.4, paddingLeft: 23 }}>
                     Where I pretend to be professional 💼✨
                   </span>
                 </a>
@@ -904,7 +921,7 @@ const Frontpage = () => {
               fontSize: 28,
               fontWeight: 800,
               letterSpacing: "-0.03em",
-              color: "#f1f5f9",
+              color: ink("heading"),
               lineHeight: 1.1,
               textAlign: "center",
               marginBottom: 10,
@@ -924,7 +941,7 @@ const Frontpage = () => {
                   borderRadius: 20,
                   background: "rgba(99,102,241,0.12)",
                   border: "1px solid rgba(99,102,241,0.3)",
-                  color: "rgba(199,210,254,0.9)",
+                  color: ink("indigo-ink", 0.9),
                 }}>
                   {role}
                 </span>
@@ -934,7 +951,7 @@ const Frontpage = () => {
             {/* ── Bio ────────────────────────────────────────────────────── */}
             <p className="mobile-item-4" style={{
               fontSize: 13,
-              color: "rgba(255,255,255,0.7)",
+              color: ink("fg", 0.7),
               lineHeight: 1.65,
               textAlign: "center",
               marginBottom: 32,

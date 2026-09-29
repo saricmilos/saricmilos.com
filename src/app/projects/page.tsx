@@ -9,9 +9,9 @@ export const metadata: Metadata = {
 
 export default function ProjectsPage() {
   return (
-    <main className="mx-auto w-full max-w-4xl px-6 py-16 text-slate-100">
+    <main className="mx-auto w-full max-w-4xl px-6 py-16 text-slate-900 dark:text-slate-100">
       <h1 className="text-4xl font-semibold tracking-tight">Selected Projects</h1>
-      <ul className="mt-8 list-disc space-y-4 pl-6 leading-8 text-slate-300">
+      <ul className="mt-8 list-disc space-y-4 pl-6 leading-8 text-slate-600 dark:text-slate-300">
         <li>Cassiopeia AI: creator intelligence and cross-platform performance analytics.</li>
         <li>Creator Operating System: workflow automation and AI-assisted decision support.</li>
         <li>FastAPI + React stacks for scalable analytics and reporting interfaces.</li>
