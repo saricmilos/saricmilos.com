@@ -1,6 +1,8 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
+import { GraduationCap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 // Theme-aware colours: the tokens are in app/globals.css, one set per theme.
@@ -270,6 +272,7 @@ function MobileLink({
   accent = "indigo",
   badge,
   rel = "noopener noreferrer",
+  newTab = true,
 }: {
   href: string;
   label: string;
@@ -278,6 +281,7 @@ function MobileLink({
   accent?: "indigo" | "cyan" | "purple" | "pink";
   badge?: string;
   rel?: string;
+  newTab?: boolean;
 }) {
   const [pressed, setPressed] = useState(false);
 
@@ -329,8 +333,8 @@ function MobileLink({
   return (
     <a
       href={href}
-      target="_blank"
-      rel={rel}
+      target={newTab ? "_blank" : undefined}
+      rel={newTab ? rel : undefined}
       onTouchStart={() => setPressed(true)}
       onTouchEnd={() => setPressed(false)}
       onMouseEnter={() => setPressed(true)}
@@ -837,6 +841,40 @@ const Frontpage = () => {
                   </span>
                 </a>
 
+                {/* Course materials — the university folders on Google Drive */}
+                <Link
+                  href="/materials"
+                  style={{
+                    position: "relative",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 4,
+                    padding: "12px 16px",
+                    borderRadius: 16,
+                    border: "1px solid rgba(139,92,246,0.5)",
+                    background: "linear-gradient(135deg,rgba(139,92,246,0.12),rgba(99,102,241,0.08))",
+                    backdropFilter: "blur(12px)",
+                    transition: "all 0.25s cubic-bezier(0.22,1,0.36,1)",
+                    textDecoration: "none",
+                    boxShadow: "0 0 20px rgba(139,92,246,0.1)",
+                  }}
+                >
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <span style={{ fontSize: 15 }}>🎓</span>
+                      <span style={{ fontFamily: "var(--font-geist-sans), sans-serif", fontSize: 12, fontWeight: 800, letterSpacing: "0.08em", color: ink("violet", 0.95), textTransform: "uppercase" }}>
+                        Course Materials
+                      </span>
+                    </div>
+                    <span style={{ fontSize: 8, fontFamily: "var(--font-geist-sans), sans-serif", fontWeight: 800, letterSpacing: "0.18em", textTransform: "uppercase", padding: "2px 7px", borderRadius: 6, background: "rgba(139,92,246,0.15)", border: "1px solid rgba(139,92,246,0.3)", color: ink("violet", 0.8) }}>
+                      Free
+                    </span>
+                  </div>
+                  <span style={{ fontSize: 10, color: ink("fg", 0.8), lineHeight: 1.4, paddingLeft: 23 }}>
+                    Study materials from my university courses 📚✨
+                  </span>
+                </Link>
+
                 </div>
               </div>
 
@@ -1023,6 +1061,18 @@ const Frontpage = () => {
                   icon={<RocketIcon />}
                   accent="cyan"
                   badge="Business"
+                />
+              </div>
+
+              <div className="mobile-item-8">
+                <MobileLink
+                  href="/materials"
+                  label="Course Materials"
+                  sublabel="Study materials from my university courses 📚"
+                  icon={<GraduationCap size={18} strokeWidth={2} />}
+                  accent="purple"
+                  badge="Free"
+                  newTab={false}
                 />
               </div>
 
