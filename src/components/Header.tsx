@@ -127,7 +127,7 @@ const ModernHeader: React.FC<ModernHeaderProps> = ({ toggleTheme, theme }) => {
                 fontStyle: "normal",
               }}
             >
-              "
+              &quot;
             </span>
             My next chapter is already prepared and I am ready to step into it
             <span
@@ -138,7 +138,7 @@ const ModernHeader: React.FC<ModernHeaderProps> = ({ toggleTheme, theme }) => {
                 fontStyle: "normal",
               }}
             >
-              "
+              &quot;
             </span>
           </p>
         </div>
@@ -187,9 +187,9 @@ const ModernHeader: React.FC<ModernHeaderProps> = ({ toggleTheme, theme }) => {
           }}
           className="text-slate-500 dark:text-slate-400"
         >
-          <span style={{ color: isDark ? "rgba(6,182,212,0.7)" : "rgba(99,102,241,0.7)", marginRight: 4 }}>"</span>
+          <span style={{ color: isDark ? "rgba(6,182,212,0.7)" : "rgba(99,102,241,0.7)", marginRight: 4 }}>&quot;</span>
           My next chapter is already prepared and I am ready to step into it
-          <span style={{ color: isDark ? "rgba(6,182,212,0.7)" : "rgba(99,102,241,0.7)", marginLeft: 4 }}>"</span>
+          <span style={{ color: isDark ? "rgba(6,182,212,0.7)" : "rgba(99,102,241,0.7)", marginLeft: 4 }}>&quot;</span>
         </p>
       </div>
 
