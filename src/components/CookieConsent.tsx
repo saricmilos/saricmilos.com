@@ -2,7 +2,13 @@
 
 import React, { useState, useSyncExternalStore } from 'react';
 import Script from 'next/script';
+import { usePathname } from 'next/navigation';
 import { Cookie } from 'lucide-react';
+
+// The client centre's pages never load Google Analytics: GA records every address it
+// sees, and a client's address (/c/<link>) is their key to their documents.
+const isPrivate = (path: string | null) =>
+  path !== null && (path.startsWith('/c/') || path === '/clients' || path.startsWith('/clients/'));
 
 // This site's own Google Analytics property (Cassiopeia has a separate one).
 const GA_ID = 'G-WWS35PRJKF';
@@ -105,6 +111,9 @@ const CookieConsent: React.FC = () => {
     () => undefined,
   );
   const [reopened, setReopened] = useState(false);
+  const pathname = usePathname();
+
+  if (isPrivate(pathname)) return null;
 
   const showBanner = consent === null || (consent !== undefined && reopened);
 

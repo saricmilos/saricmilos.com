@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# client centre: the local stand-in database (PGlite) for npm run dev
+/.data/
